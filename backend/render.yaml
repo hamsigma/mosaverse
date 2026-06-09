@@ -1,0 +1,53 @@
+services:
+  - type: web
+    name: mosaverse-backend
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+      python manage.py migrate --noinput
+    startCommand: gunicorn config.wsgi --log-file -
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.6
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: DB_ENGINE
+        value: django.db.backends.mysql
+      - key: DB_NAME
+        fromDatabase:
+          name: mosaverse-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: mosaverse-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: mosaverse-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: mosaverse-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: mosaverse-db
+          property: port
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+
+databases:
+  - name: mosaverse-db
+    plan: free
+    region: singapore
+    databaseName: mosaverse
+    ipAllowList: []

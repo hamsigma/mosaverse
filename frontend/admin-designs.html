@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MosaVerse Admin — Manage Designs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: { primary: '#0F0F0F', secondary: '#1F1F1F', accent: '#FFFFFF', highlight: '#7C3AED', bg: '#F5F5F5' },
+                fontFamily: { epilogue: ['Epilogue', 'sans-serif'], vietnam: ['Be Vietnam Pro', 'sans-serif'] },
+                borderRadius: { 'card': '12px', 'btn': '10px', 'input': '10px' }
+            }}
+        }
+    </script>
+</head>
+<body class="bg-bg font-vietnam text-primary min-h-screen">
+
+    <!-- Admin Sidebar -->
+    <aside class="fixed inset-y-0 left-0 w-60 bg-primary text-accent z-50 flex flex-col">
+        <div class="p-6">
+            <a href="../index.html" class="font-epilogue text-lg font-bold tracking-tight text-accent">Mosa<span class="text-highlight">Verse</span></a>
+            <p class="text-[10px] text-accent/40 uppercase tracking-widest mt-1">Admin Panel</p>
+        </div>
+        <nav class="flex-1 px-4 space-y-1">
+            <a href="admin-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 rounded-btn text-sm text-accent/60 hover:text-accent hover:bg-secondary/50 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                Dashboard
+            </a>
+            <a href="admin-designs.html" class="flex items-center gap-3 px-4 py-2.5 rounded-btn text-sm font-semibold bg-secondary text-accent">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Designs
+            </a>
+        </nav>
+        <div class="p-4 border-t border-accent/10">
+            <button id="logoutBtn" class="flex items-center gap-3 w-full px-4 py-2.5 rounded-btn text-sm text-accent/60 hover:text-accent hover:bg-secondary/50 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-60 min-h-screen">
+        <header class="bg-white/80 backdrop-blur-md border-b border-primary/5 sticky top-0 z-40">
+            <div class="px-8 py-4 flex items-center justify-between">
+                <h1 class="font-epilogue text-xl font-bold">Manage Designs</h1>
+                <a href="admin-design-form.html" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-accent text-sm font-semibold rounded-btn hover:bg-highlight transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Add New
+                </a>
+            </div>
+        </header>
+
+        <div class="p-8">
+            <!-- Designs Table -->
+            <div class="bg-white rounded-card shadow-sm overflow-hidden">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-primary/5">
+                            <th class="text-left text-xs font-bold uppercase tracking-wider text-primary/40 px-6 py-3">Design</th>
+                            <th class="text-left text-xs font-bold uppercase tracking-wider text-primary/40 px-6 py-3">Category</th>
+                            <th class="text-left text-xs font-bold uppercase tracking-wider text-primary/40 px-6 py-3">Status</th>
+                            <th class="text-left text-xs font-bold uppercase tracking-wider text-primary/40 px-6 py-3">Date</th>
+                            <th class="text-right text-xs font-bold uppercase tracking-wider text-primary/40 px-6 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="designsTableBody">
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-sm text-primary/40">Loading designs...</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <div id="designsPagination" class="px-6 py-4 border-t border-primary/5 flex items-center justify-between">
+                    <p id="designsInfo" class="text-xs text-primary/40">-</p>
+                    <div id="designsPages" class="flex items-center gap-2"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center">
+        <div class="absolute inset-0 bg-primary/50 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+        <div class="relative bg-white rounded-card p-8 max-w-sm w-full mx-6 shadow-lg">
+            <h3 class="font-epilogue text-lg font-bold mb-2">Delete Design?</h3>
+            <p class="text-sm text-primary/60 mb-6">Desain "<span id="deleteDesignName"></span>" akan dihapus permanen. Aksi ini tidak bisa dibatalkan.</p>
+            <div class="flex items-center gap-3 justify-end">
+                <button onclick="closeDeleteModal()" class="px-5 py-2.5 border border-primary/10 text-sm font-semibold rounded-btn hover:bg-primary/5 transition-colors">Cancel</button>
+                <button id="confirmDeleteBtn" class="px-5 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-btn hover:bg-red-700 transition-colors">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="hidden fixed bottom-6 right-6 z-[110] px-5 py-3 rounded-btn text-sm font-semibold shadow-lg"></div>
+
+    <script src="js/api.js"></script>
+    <script src="js/admin-api.js"></script>
+    <script src="js/admin-designs.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MosaVerse Admin — Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0F0F0F', secondary: '#1F1F1F', accent: '#FFFFFF',
+                        highlight: '#7C3AED', bg: '#F5F5F5',
+                    },
+                    fontFamily: {
+                        epilogue: ['Epilogue', 'sans-serif'], vietnam: ['Be Vietnam Pro', 'sans-serif'],
+                    },
+                    borderRadius: { 'card': '12px', 'btn': '10px', 'input': '10px' }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-bg font-vietnam text-primary min-h-screen flex items-center justify-center">
+
+    <div class="w-full max-w-md mx-6">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <a href="../index.html" class="font-epilogue text-2xl font-bold tracking-tight text-primary">
+                Mosa<span class="text-highlight">Verse</span>
+            </a>
+            <p class="text-sm text-primary/50 mt-2">Admin Panel</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-white rounded-card shadow-sm p-8">
+            <h1 class="font-epilogue text-xl font-bold mb-6">Sign In</h1>
+
+            <!-- Error message -->
+            <div id="errorMsg" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-btn">
+                Username atau password salah.
+            </div>
+
+            <form id="loginForm" class="space-y-5">
+                <!-- Username -->
+                <div>
+                    <label for="username" class="block text-xs font-bold uppercase tracking-wider text-primary/50 mb-2">Username</label>
+                    <input 
+                        type="text" id="username" name="username" required autocomplete="username"
+                        class="w-full px-4 py-3 bg-bg border border-primary/10 rounded-input text-sm text-primary placeholder-primary/30 outline-none focus:border-highlight focus:ring-2 focus:ring-highlight/20 transition-all"
+                        placeholder="Enter your username"
+                    >
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label for="password" class="block text-xs font-bold uppercase tracking-wider text-primary/50 mb-2">Password</label>
+                    <input 
+                        type="password" id="password" name="password" required autocomplete="current-password"
+                        class="w-full px-4 py-3 bg-bg border border-primary/10 rounded-input text-sm text-primary placeholder-primary/30 outline-none focus:border-highlight focus:ring-2 focus:ring-highlight/20 transition-all"
+                        placeholder="Enter your password"
+                    >
+                </div>
+
+                <!-- Submit -->
+                <button 
+                    type="submit" id="loginBtn"
+                    class="w-full py-3 bg-primary text-accent text-sm font-semibold rounded-btn hover:bg-highlight transition-colors disabled:opacity-50"
+                >
+                    Sign In
+                </button>
+            </form>
+        </div>
+
+        <p class="text-center text-xs text-primary/30 mt-6">&copy; 2026 MosaVerse</p>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/admin-api.js"></script>
+    <script src="js/admin-auth.js"></script>
+</body>
+</html>

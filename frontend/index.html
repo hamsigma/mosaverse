@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MosaVerse — AI Fashion Design Gallery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0F0F0F',
+                        secondary: '#1F1F1F',
+                        accent: '#FFFFFF',
+                        highlight: '#7C3AED',
+                        bg: '#F5F5F5',
+                        error: '#ba1a1a',
+                    },
+                    fontFamily: {
+                        epilogue: ['Epilogue', 'sans-serif'],
+                        vietnam: ['Be Vietnam Pro', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'sm': '4px',
+                        'DEFAULT': '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '24px',
+                        'card': '12px',
+                        'btn': '10px',
+                        'input': '10px',
+                        'full': '9999px',
+                    },
+                    spacing: {
+                        'base': '4px',
+                        'xs': '8px',
+                        'sm': '16px',
+                        'md': '24px',
+                        'lg': '48px',
+                        'xl': '80px',
+                        'gutter': '24px',
+                        'margin': '32px',
+                    },
+                    letterSpacing: {
+                        'tight-xl': '-0.02em',
+                        'tight-lg': '-0.01em',
+                        'wide-xl': '0.1em',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-bg font-vietnam text-primary min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-primary/5 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="font-epilogue text-xl font-bold tracking-tight text-primary">
+                    Mosa<span class="text-highlight">Verse</span>
+                </a>
+                <div class="flex items-center gap-8">
+                    <a href="index.html" class="text-sm font-semibold text-primary relative pb-1 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:rounded-full after:bg-highlight">
+                        Gallery
+                    </a>
+                    <a href="#" class="text-sm text-primary/60 hover:text-primary transition-colors">
+                        About
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="max-w-7xl mx-auto px-6 lg:px-8 pt-12 pb-8">
+        <div class="max-w-2xl">
+            <p class="text-xs font-bold uppercase tracking-widest text-highlight mb-3">AI-Powered Gallery</p>
+            <h1 class="font-epilogue text-4xl md:text-5xl font-bold leading-tight tracking-tight text-primary">
+                Discover Unique<br>Fashion Designs
+            </h1>
+            <p class="mt-4 text-base text-primary/60 leading-relaxed">
+                Jelajahi koleksi desain baju eksklusif. Gunakan AI Smart Search untuk menemukan desain impianmu dengan bahasa alami.
+            </p>
+        </div>
+    </section>
+
+    <!-- AI Search Bar -->
+    <section class="max-w-7xl mx-auto px-6 lg:px-8 pb-8">
+        <div class="relative max-w-2xl">
+            <div class="flex items-center bg-white rounded-btn border border-primary/10 shadow-sm focus-within:border-highlight focus-within:ring-2 focus-within:ring-highlight/20 transition-all">
+                <svg class="w-5 h-5 ml-4 text-primary/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input 
+                    type="text" 
+                    id="searchInput"
+                    placeholder="Cari dengan AI... contoh: 'baju kasual warna gelap'"
+                    class="w-full px-4 py-3.5 bg-transparent text-sm text-primary placeholder-primary/40 outline-none"
+                >
+                <button 
+                    id="searchBtn"
+                    class="mr-2 px-5 py-2 bg-primary text-accent text-sm font-semibold rounded-btn hover:bg-highlight transition-colors"
+                >
+                    Search
+                </button>
+            </div>
+            <!-- Search loading indicator -->
+            <div id="searchLoading" class="hidden mt-3 flex items-center gap-2 text-sm text-primary/60">
+                <svg class="animate-spin h-4 w-4 text-highlight" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                <span>AI sedang mencari...</span>
+            </div>
+            <!-- Search results info -->
+            <div id="searchInfo" class="hidden mt-3 flex items-center justify-between">
+                <p class="text-sm text-primary/60">
+                    Menampilkan <span id="searchCount">0</span> hasil untuk "<span id="searchQuery"></span>"
+                </p>
+                <button id="clearSearch" class="text-sm text-highlight font-semibold hover:underline">
+                    Hapus pencarian
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Filter -->
+    <section class="max-w-7xl mx-auto px-6 lg:px-8 pb-6">
+        <div class="flex items-center gap-3 overflow-x-auto pb-2" id="categoryFilter">
+            <button class="category-btn active px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full bg-primary text-accent transition-all" data-category="all">
+                All
+            </button>
+        </div>
+    </section>
+
+    <!-- Gallery Grid -->
+    <section class="max-w-7xl mx-auto px-6 lg:px-8 pb-16">
+        <!-- Loading state -->
+        <div id="galleryLoading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="animate-pulse bg-white rounded-card overflow-hidden">
+                <div class="aspect-[3/4] bg-primary/5"></div>
+                <div class="p-5">
+                    <div class="h-4 bg-primary/5 rounded w-3/4 mb-2"></div>
+                    <div class="h-3 bg-primary/5 rounded w-1/2"></div>
+                </div>
+            </div>
+            <div class="animate-pulse bg-white rounded-card overflow-hidden">
+                <div class="aspect-[3/4] bg-primary/5"></div>
+                <div class="p-5">
+                    <div class="h-4 bg-primary/5 rounded w-3/4 mb-2"></div>
+                    <div class="h-3 bg-primary/5 rounded w-1/2"></div>
+                </div>
+            </div>
+            <div class="animate-pulse bg-white rounded-card overflow-hidden hidden sm:block">
+                <div class="aspect-[3/4] bg-primary/5"></div>
+                <div class="p-5">
+                    <div class="h-4 bg-primary/5 rounded w-3/4 mb-2"></div>
+                    <div class="h-3 bg-primary/5 rounded w-1/2"></div>
+                </div>
+            </div>
+            <div class="animate-pulse bg-white rounded-card overflow-hidden hidden md:block">
+                <div class="aspect-[3/4] bg-primary/5"></div>
+                <div class="p-5">
+                    <div class="h-4 bg-primary/5 rounded w-3/4 mb-2"></div>
+                    <div class="h-3 bg-primary/5 rounded w-1/2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gallery content -->
+        <div id="galleryGrid" class="hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Cards will be rendered by JavaScript -->
+        </div>
+
+        <!-- Empty state -->
+        <div id="emptyState" class="hidden text-center py-20">
+            <svg class="w-16 h-16 mx-auto text-primary/20 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <h3 class="font-epilogue text-lg font-semibold text-primary/60">Belum ada desain</h3>
+            <p class="text-sm text-primary/40 mt-1">Desain akan muncul di sini setelah ditambahkan.</p>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="hidden flex items-center justify-center gap-2 mt-12">
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-primary/5 py-8">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <p class="text-xs text-primary/40">&copy; 2026 MosaVerse. All rights reserved.</p>
+                <p class="text-xs text-primary/40">Powered by DeepSeek AI</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
