@@ -3,6 +3,14 @@ from .models import Category, Design
 from .validators import validate_image_file, sanitize_string
 
 
+def _get_image_url(obj, context):
+    """Build absolute URL for a design's image field."""
+    request = context.get('request')
+    if obj.image and request:
+        return request.build_absolute_uri(obj.image.url)
+    return None
+
+
 class CategorySerializer(serializers.ModelSerializer):
     design_count = serializers.SerializerMethodField()
 
@@ -49,10 +57,7 @@ class DesignSerializer(serializers.ModelSerializer):
         read_only_fields = ['slug', 'created_at', 'updated_at']
 
     def get_image_url(self, obj):
-        request = self.context.get('request')
-        if obj.image and request:
-            return request.build_absolute_uri(obj.image.url)
-        return None
+        return _get_image_url(obj, self.context)
 
     def validate_title(self, value):
         value = sanitize_string(value, max_length=200)
@@ -84,7 +89,4 @@ class DesignListSerializer(serializers.ModelSerializer):
                   'category_name', 'is_featured', 'created_at']
 
     def get_image_url(self, obj):
-        request = self.context.get('request')
-        if obj.image and request:
-            return request.build_absolute_uri(obj.image.url)
-        return None
+        return _get_image_url(obj, self.context)

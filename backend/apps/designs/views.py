@@ -1,18 +1,21 @@
-from rest_framework import generics, permissions, filters, status
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from django.utils.decorators import method_decorator
+from rest_framework import generics, permissions, filters
 from django.views.decorators.csrf import csrf_exempt
 from .models import Category, Design
-from .serializers import (
-    CategorySerializer,
-    DesignSerializer,
-    DesignListSerializer,
-)
+from .serializers import CategorySerializer, DesignSerializer, DesignListSerializer
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class CategoryListCreateView(generics.ListCreateAPIView):
+class CsrfExemptMixin:
+    """Mixin to apply csrf_exempt to class-based views."""
+
+    @classmethod
+    def as_view(cls, **kwargs):
+        view = super().as_view(**kwargs)
+        return csrf_exempt(view)
+
+
+# ─── Category Views ─────────────────────────────────────
+
+class CategoryListCreateView(CsrfExemptMixin, generics.ListCreateAPIView):
     """List semua kategori atau buat kategori baru (admin only)."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -23,8 +26,7 @@ class CategoryListCreateView(generics.ListCreateAPIView):
         return [permissions.AllowAny()]
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+class CategoryDetailView(CsrfExemptMixin, generics.RetrieveUpdateDestroyAPIView):
     """Detail, update, atau hapus kategori (admin only untuk write)."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -35,10 +37,11 @@ class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
         return [permissions.AllowAny()]
 
 
+# ─── Design Views (Public) ─────────────────────────────
+
 class DesignListView(generics.ListAPIView):
     """List semua desain untuk gallery (public)."""
-    queryset = Design.objects.filter(
-        is_published=True).select_related('category')
+    queryset = Design.objects.filter(is_published=True).select_related('category')
     serializer_class = DesignListSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'description', 'category__name']
@@ -48,22 +51,21 @@ class DesignListView(generics.ListAPIView):
 
 class DesignDetailView(generics.RetrieveAPIView):
     """Detail desain (public)."""
-    queryset = Design.objects.filter(
-        is_published=True).select_related('category')
+    queryset = Design.objects.filter(is_published=True).select_related('category')
     serializer_class = DesignSerializer
     lookup_field = 'pk'
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class DesignCreateView(generics.CreateAPIView):
+# ─── Design Views (Admin) ──────────────────────────────
+
+class DesignCreateView(CsrfExemptMixin, generics.CreateAPIView):
     """Buat desain baru (admin only)."""
     queryset = Design.objects.all()
     serializer_class = DesignSerializer
     permission_classes = [permissions.IsAdminUser]
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class DesignUpdateView(generics.UpdateAPIView):
+class DesignUpdateView(CsrfExemptMixin, generics.UpdateAPIView):
     """Update desain (admin only)."""
     queryset = Design.objects.all()
     serializer_class = DesignSerializer
@@ -71,8 +73,7 @@ class DesignUpdateView(generics.UpdateAPIView):
     lookup_field = 'pk'
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class DesignDeleteView(generics.DestroyAPIView):
+class DesignDeleteView(CsrfExemptMixin, generics.DestroyAPIView):
     """Hapus desain (admin only)."""
     queryset = Design.objects.all()
     permission_classes = [permissions.IsAdminUser]

@@ -18,6 +18,7 @@ from django.conf import settings
 from openai import OpenAI, APIError, APITimeoutError, APIConnectionError
 
 from apps.designs.models import Design, Category
+from config.middleware import get_client_ip
 
 logger = logging.getLogger(__name__)
 
@@ -199,7 +200,7 @@ def smart_search(query: str, request=None) -> dict:
     from apps.designs.serializers import DesignListSerializer
 
     # Rate limiting
-    client_ip = _get_client_ip(request) if request else 'unknown'
+    client_ip = get_client_ip(request) if request else 'unknown'
     if not rate_limiter.is_allowed(client_ip):
         raise RateLimitExceeded(
             f"Rate limit exceeded. Try again in {RATE_LIMIT_WINDOW} seconds."
@@ -380,11 +381,3 @@ def _parse_id_list(text: str) -> List[int]:
         if part.isdigit():
             ids.append(int(part))
     return ids
-
-
-def _get_client_ip(request) -> str:
-    """Extract client IP from Django request."""
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        return x_forwarded_for.split(',')[0].strip()
-    return request.META.get('REMOTE_ADDR', 'unknown')

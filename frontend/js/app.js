@@ -1,53 +1,54 @@
 /**
- * MosaVerse Gallery Page - Main Application Logic
+ * MosaVerse Gallery Page
  */
 
-// State
+// ─── State ─────────────────────────────────────────────
+
 let currentPage = 1;
 let currentCategory = "all";
+let currentSearch = "";
 let isSearching = false;
 
-// DOM Elements
-const galleryGrid = document.getElementById("galleryGrid");
-const galleryLoading = document.getElementById("galleryLoading");
-const emptyState = document.getElementById("emptyState");
-const pagination = document.getElementById("pagination");
-const categoryFilter = document.getElementById("categoryFilter");
-const searchInput = document.getElementById("searchInput");
-const searchBtn = document.getElementById("searchBtn");
-const searchLoading = document.getElementById("searchLoading");
-const searchInfo = document.getElementById("searchInfo");
-const searchCount = document.getElementById("searchCount");
-const searchQuery = document.getElementById("searchQuery");
-const clearSearch = document.getElementById("clearSearch");
+// ─── DOM Elements ──────────────────────────────────────
 
-/**
- * Render a single design card
- */
+const $ = (id) => document.getElementById(id);
+
+const galleryGrid = $("galleryGrid");
+const galleryLoading = $("galleryLoading");
+const emptyState = $("emptyState");
+const pagination = $("pagination");
+const categoryFilter = $("categoryFilter");
+const searchInput = $("searchInput");
+const searchBtn = $("searchBtn");
+const searchLoading = $("searchLoading");
+const searchInfo = $("searchInfo");
+const searchCount = $("searchCount");
+const searchQuery = $("searchQuery");
+const clearSearch = $("clearSearch");
+
+// ─── Card Renderer ─────────────────────────────────────
+
 function renderCard(design) {
-  const imageUrl =
-    design.image_url || "https://via.placeholder.com/400x400?text=No+Image";
+  const imageUrl = design.image_url || "https://via.placeholder.com/400x400?text=No+Image";
   const categoryName = design.category_name || "Uncategorized";
 
   return `
-        <a href="detail.html?id=${design.id}" class="block bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <div class="aspect-square overflow-hidden bg-gray-900">
-                <img src="${imageUrl}" alt="${design.title}" class="w-full h-full object-cover">
-            </div>
-            <div class="p-4">
-                <h3 class="font-epilogue text-sm font-bold text-black truncate">${design.title}</h3>
-                <p class="text-xs text-gray-500 mt-1">${categoryName}</p>
-                <button class="mt-3 w-full py-2 bg-black text-white text-xs font-semibold rounded-lg hover:bg-gray-800 transition-colors">
-                    View Detail
-                </button>
-            </div>
-        </a>
-    `;
+    <a href="detail.html?id=${design.id}" class="block bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div class="aspect-square overflow-hidden bg-gray-900">
+            <img src="${imageUrl}" alt="${design.title}" class="w-full h-full object-cover">
+        </div>
+        <div class="p-4">
+            <h3 class="font-epilogue text-sm font-bold text-black truncate">${design.title}</h3>
+            <p class="text-xs text-gray-500 mt-1">${categoryName}</p>
+            <button class="mt-3 w-full py-2 bg-black text-white text-xs font-semibold rounded-lg hover:bg-gray-800 transition-colors">
+                View Detail
+            </button>
+        </div>
+    </a>`;
 }
 
-/**
- * Render the gallery grid
- */
+// ─── Gallery Renderer ──────────────────────────────────
+
 function renderGallery(designs) {
   if (designs.length === 0) {
     galleryGrid.classList.add("hidden");
@@ -63,71 +64,68 @@ function renderGallery(designs) {
   galleryGrid.classList.remove("hidden");
 }
 
-/**
- * Render pagination
- */
+// ─── Pagination ────────────────────────────────────────
+
 function renderPagination(totalPages, current) {
   if (totalPages <= 1) {
     pagination.classList.add("hidden");
     return;
   }
 
-  let html = "";
+  const parts = [];
 
-  // Previous button
-  html += `<button class="page-btn" ${current === 1 ? "disabled" : ""} onclick="goToPage(${current - 1})">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-    </button>`;
+  // Previous
+  parts.push(`<button class="page-btn" ${current === 1 ? "disabled" : ""} onclick="goToPage(${current - 1})">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+  </button>`);
 
-  // Page numbers
+  // Page numbers with ellipsis
   const start = Math.max(1, current - 2);
   const end = Math.min(totalPages, current + 2);
 
   if (start > 1) {
-    html += `<button class="page-btn" onclick="goToPage(1)">1</button>`;
-    if (start > 2) html += `<span class="text-primary/40 px-1">...</span>`;
+    parts.push(`<button class="page-btn" onclick="goToPage(1)">1</button>`);
+    if (start > 2) parts.push(`<span class="text-gray-400 px-1">...</span>`);
   }
 
   for (let i = start; i <= end; i++) {
-    html += `<button class="page-btn ${i === current ? "active" : ""}" onclick="goToPage(${i})">${i}</button>`;
+    parts.push(`<button class="page-btn ${i === current ? "active" : ""}" onclick="goToPage(${i})">${i}</button>`);
   }
 
   if (end < totalPages) {
-    if (end < totalPages - 1)
-      html += `<span class="text-primary/40 px-1">...</span>`;
-    html += `<button class="page-btn" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+    if (end < totalPages - 1) parts.push(`<span class="text-gray-400 px-1">...</span>`);
+    parts.push(`<button class="page-btn" onclick="goToPage(${totalPages})">${totalPages}</button>`);
   }
 
-  // Next button
-  html += `<button class="page-btn" ${current === totalPages ? "disabled" : ""} onclick="goToPage(${current + 1})">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-    </button>`;
+  // Next
+  parts.push(`<button class="page-btn" ${current === totalPages ? "disabled" : ""} onclick="goToPage(${current + 1})">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </button>`);
 
-  pagination.innerHTML = html;
+  pagination.innerHTML = parts.join("");
   pagination.classList.remove("hidden");
 }
 
-/**
- * Navigate to a specific page
- */
+// ─── Data Loading ──────────────────────────────────────
+
 function goToPage(page) {
   currentPage = page;
   loadDesigns();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/**
- * Load designs from API
- */
 async function loadDesigns() {
-  if (isSearching) return; // Don't load regular designs during search
+  if (isSearching) return;
 
   galleryLoading.classList.remove("hidden");
   galleryGrid.classList.add("hidden");
   emptyState.classList.add("hidden");
 
   try {
-    const data = await API.getDesigns(currentPage);
+    const params = { page: currentPage };
+    if (currentSearch) params.search = currentSearch;
+
+    const data = await API.getDesigns(currentPage, currentSearch);
     renderGallery(data.results || []);
     renderPagination(Math.ceil((data.count || 0) / 12), currentPage);
   } catch (error) {
@@ -137,26 +135,24 @@ async function loadDesigns() {
   }
 }
 
-/**
- * Load categories from API
- */
+// ─── Categories ────────────────────────────────────────
+
 async function loadCategories() {
   try {
     const data = await API.getCategories();
     const categories = data.results || data || [];
 
-    // Keep the "All" button and add category buttons
+    // Preserve "All" button, append category buttons
     const allBtn = categoryFilter.querySelector('[data-category="all"]');
     categoryFilter.innerHTML = "";
     categoryFilter.appendChild(allBtn);
 
     categories.forEach((cat) => {
       const btn = document.createElement("button");
-      btn.className =
-        "category-btn px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full transition-all";
+      btn.className = "category-btn px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full transition-all";
       btn.dataset.category = cat.id;
       btn.textContent = cat.name;
-      btn.addEventListener("click", () => filterByCategory(cat.id, cat.name));
+      btn.addEventListener("click", () => setActiveCategory(cat.id));
       categoryFilter.appendChild(btn);
     });
   } catch (error) {
@@ -164,64 +160,23 @@ async function loadCategories() {
   }
 }
 
-/**
- * Filter gallery by category
- */
-function filterByCategory(categoryId, categoryName) {
+function setActiveCategory(categoryId) {
   currentCategory = categoryId;
   currentPage = 1;
 
-  // Update active state
+  // Update active classes
   categoryFilter.querySelectorAll(".category-btn").forEach((btn) => {
-    if (btn.dataset.category == categoryId) {
-      btn.classList.add("active");
-      btn.classList.remove("bg-primary", "text-accent");
-      btn.classList.add("bg-primary", "text-accent");
-    } else {
-      btn.classList.remove("active");
-    }
+    btn.classList.toggle("active", btn.dataset.category == categoryId);
   });
 
-  // Update "All" button
-  const allBtn = categoryFilter.querySelector('[data-category="all"]');
-  if (categoryId === "all") {
-    allBtn.classList.add("active");
-  } else {
-    allBtn.classList.remove("active");
-  }
-
-  // Reload with filter (using search param for category name)
-  loadDesignsWithCategory(categoryId);
+  // Use category name as search term for filtering
+  const activeBtn = categoryFilter.querySelector(`[data-category="${categoryId}"]`);
+  currentSearch = categoryId === "all" ? "" : (activeBtn?.textContent || "");
+  loadDesigns();
 }
 
-/**
- * Load designs filtered by category
- */
-async function loadDesignsWithCategory(categoryId) {
-  galleryLoading.classList.remove("hidden");
-  galleryGrid.classList.add("hidden");
+// ─── AI Search ─────────────────────────────────────────
 
-  try {
-    const params = { page: currentPage };
-    if (categoryId !== "all") {
-      // Use the category name for filtering via search
-      const catBtn = categoryFilter.querySelector(
-        `[data-category="${categoryId}"]`,
-      );
-      if (catBtn) params.search = catBtn.textContent;
-    }
-
-    const data = await API.getDesigns(currentPage, params.search || "");
-    renderGallery(data.results || []);
-    renderPagination(Math.ceil((data.count || 0) / 12), currentPage);
-  } catch (error) {
-    console.error("Error loading designs:", error);
-  }
-}
-
-/**
- * AI Smart Search
- */
 async function performSearch(query) {
   if (!query.trim()) return;
 
@@ -255,44 +210,29 @@ async function performSearch(query) {
   }
 }
 
-/**
- * Clear search results
- */
 function clearSearchResults() {
   isSearching = false;
   searchInput.value = "";
   searchInfo.classList.add("hidden");
   searchLoading.classList.add("hidden");
+  currentSearch = "";
   loadDesigns();
 }
 
-// Event Listeners
-searchBtn.addEventListener("click", () => {
-  performSearch(searchInput.value);
-});
+// ─── Event Listeners ───────────────────────────────────
 
+searchBtn.addEventListener("click", () => performSearch(searchInput.value));
 searchInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    performSearch(searchInput.value);
-  }
+  if (e.key === "Enter") performSearch(searchInput.value);
 });
-
 clearSearch.addEventListener("click", clearSearchResults);
 
-// Category filter "All" button
-document
-  .querySelector('[data-category="all"]')
-  .addEventListener("click", () => {
-    currentCategory = "all";
-    currentPage = 1;
-    categoryFilter
-      .querySelectorAll(".category-btn")
-      .forEach((btn) => btn.classList.remove("active"));
-    document.querySelector('[data-category="all"]').classList.add("active");
-    loadDesigns();
-  });
+document.querySelector('[data-category="all"]').addEventListener("click", () => {
+  setActiveCategory("all");
+});
 
-// Initialize
+// ─── Init ──────────────────────────────────────────────
+
 document.addEventListener("DOMContentLoaded", () => {
   loadDesigns();
   loadCategories();

@@ -1,132 +1,126 @@
 /**
- * MosaVerse API Configuration & Helper Functions
+ * MosaVerse API Client
+ *
+ * Centralized HTTP client for all API communication.
+ * All endpoints go through this module for consistent error handling,
+ * credential management, and CSRF token injection.
  */
 
 const API_BASE = "http://127.0.0.1:8000/api";
 
-const API = {
-  /**
-   * GET request
-   */
-  async get(endpoint, params = {}) {
-    const url = new URL(`${API_BASE}${endpoint}`);
-    Object.entries(params).forEach(([key, val]) => {
-      if (val !== null && val !== undefined && val !== "") {
-        url.searchParams.append(key, val);
-      }
-    });
+// ─── Utilities ─────────────────────────────────────────
 
-    const response = await fetch(url.toString(), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
-    }
-
-    return response.json();
-  },
-
-  /**
-   * POST request
-   */
-  async post(endpoint, data = {}, useCSRF = true) {
-    const headers = {
-      "Content-Type": "application/json",
-    };
-
-    if (useCSRF) {
-      const csrfToken = getCookie("csrftoken");
-      if (csrfToken) {
-        headers["X-CSRFToken"] = csrfToken;
-      }
-    }
-
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      method: "POST",
-      headers,
-      credentials: "include",
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`);
-    }
-
-    return response.json();
-  },
-
-  /**
-   * Get all designs (paginated)
-   */
-  async getDesigns(page = 1, search = "", category = "") {
-    const params = { page };
-    if (search) params.search = search;
-    if (category) params.category = category;
-    return this.get("/designs/", params);
-  },
-
-  /**
-   * Get single design detail
-   */
-  async getDesign(id) {
-    return this.get(`/designs/${id}/`);
-  },
-
-  /**
-   * Get all categories
-   */
-  async getCategories() {
-    return this.get("/categories/");
-  },
-
-  /**
-   * AI Smart Search
-   */
-  async aiSearch(query) {
-    return this.post("/ai/search/", { query });
-  },
-};
-
-/**
- * Get cookie value by name
- */
 function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== "") {
-    const cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === name + "=") {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
 }
 
-/**
- * Format date to Indonesian locale
- */
 function formatDate(dateString) {
   if (!dateString) return "-";
-  const date = new Date(dateString);
-  return date.toLocaleDateString("id-ID", {
+  return new Date(dateString).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 }
 
-/**
- * Get URL parameter by name
- */
 function getUrlParam(name) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(name);
+  return new URLSearchParams(window.location.search).get(name);
 }
+
+// ─── HTTP Helpers ──────────────────────────────────────
+
+function _buildHeaders({ json = true } = {}) {
+  const headers = {};
+  if (json) headers["Content-Type"] = "application/json";
+  const csrf = getCookie("csrftoken");
+  if (csrf) headers["X-CSRFToken"] = csrf;
+  return headers;
+}
+
+async function _request(method, endpoint, { body, params, json = true } = {}) {
+  const url = new URL(`${API_BASE}${endpoint}`);
+  if (params) {
+    Object.entries(params).forEach(([key, val]) => {
+      if (val !== null && val !== undefined && val !== "") {
+        url.searchParams.append(key, val);
+      }
+    });
+  }
+
+  const options = {
+    method,
+    headers: _buildHeaders({ json }),
+    credentials: "include",
+  };
+
+  if (body !== undefined) {
+    options.body = json ? JSON.stringify(body) : body;
+    if (!json) {
+      // Let browser set Content-Type for FormData
+      delete options.headers["Content-Type"];
+    }
+  }
+
+  const response = await fetch(url.toString(), options);
+
+  if (!response.ok) {
+    const errData = await response.json().catch(() => ({}));
+    throw new Error(JSON.stringify(errData) || `HTTP ${response.status}`);
+  }
+
+  // 204 No Content
+  if (response.status === 204) return null;
+  return response.json();
+}
+
+// ─── API Object ────────────────────────────────────────
+
+const API = {
+  get(endpoint, params) {
+    return _request("GET", endpoint, { params });
+  },
+
+  post(endpoint, body) {
+    return _request("POST", endpoint, { body });
+  },
+
+  put(endpoint, body) {
+    return _request("PUT", endpoint, { body });
+  },
+
+  delete(endpoint) {
+    return _request("DELETE", endpoint);
+  },
+
+  /** Multipart upload (FormData) — POST */
+  upload(endpoint, formData) {
+    return _request("POST", endpoint, { body: formData, json: false });
+  },
+
+  /** Multipart upload (FormData) — PUT */
+  uploadPut(endpoint, formData) {
+    return _request("PUT", endpoint, { body: formData, json: false });
+  },
+
+  // ─── Domain Methods ──────────────────────────────────
+
+  getDesigns(page = 1, search = "", category = "") {
+    const params = { page };
+    if (search) params.search = search;
+    if (category) params.category = category;
+    return this.get("/designs/", params);
+  },
+
+  getDesign(id) {
+    return this.get(`/designs/${id}/`);
+  },
+
+  getCategories() {
+    return this.get("/categories/");
+  },
+
+  aiSearch(query) {
+    return this.post("/ai/search/", { query });
+  },
+};

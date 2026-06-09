@@ -15,20 +15,6 @@ from django.http import HttpResponseBadRequest
 from django.conf import settings
 from rest_framework.authentication import SessionAuthentication as BaseSessionAuthentication
 
-class SessionAuthentication(BaseSessionAuthentication):
-    """
-    Session authentication without CSRF enforcement.
-
-    DRF's default SessionAuthentication enforces CSRF even when @csrf_exempt
-    is applied. Since this API is consumed by a separate frontend (CORS),
-    CSRF protection is handled at the middleware level with @csrf_exempt
-    on write endpoints. Session cookies still provide authentication.
-    """
-
-    def enforce_csrf(self, request):
-        return  # Skip DRF's CSRF check
-
-
 logger = logging.getLogger(__name__)
 
 # Maximum upload size: 10MB
@@ -43,16 +29,36 @@ ALLOWED_IMAGE_TYPES = [
 ]
 
 
-class SecurityHeadersMiddleware:
-    """
-    Add security headers to all responses.
+# ─── Shared Utility ─────────────────────────────────────
 
-    Headers added:
-    - X-Content-Type-Options: nosniff
-    - X-XSS-Protection: 1; mode=block (legacy browsers)
-    - Referrer-Policy: strict-origin-when-cross-origin
-    - Permissions-Policy: camera=(), microphone=(), geolocation=()
+def get_client_ip(request) -> str:
+    """Extract client IP from Django request (handles X-Forwarded-For)."""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        return x_forwarded_for.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR', 'unknown')
+
+
+# ─── Session Auth (CSRF-exempt) ─────────────────────────
+
+class SessionAuthentication(BaseSessionAuthentication):
     """
+    Session authentication without CSRF enforcement.
+
+    DRF's default SessionAuthentication enforces CSRF even when @csrf_exempt
+    is applied. Since this API is consumed by a separate frontend (CORS),
+    CSRF protection is handled at the middleware level with @csrf_exempt
+    on write endpoints. Session cookies still provide authentication.
+    """
+
+    def enforce_csrf(self, request):
+        return  # Skip DRF's CSRF check
+
+
+# ─── Middleware Classes ──────────────────────────────────
+
+class SecurityHeadersMiddleware:
+    """Add security headers to all responses."""
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -65,7 +71,6 @@ class SecurityHeadersMiddleware:
         response['Referrer-Policy'] = 'strict-origin-when-cross-origin'
         response['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
 
-        # HSTS in production only
         if not settings.DEBUG:
             response['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
 
@@ -73,31 +78,23 @@ class SecurityHeadersMiddleware:
 
 
 class FileUploadValidationMiddleware:
-    """
-    Validate file uploads before processing.
-
-    Checks:
-    - File size limit (10MB max)
-    - Allowed MIME types for image uploads
-    """
+    """Validate file uploads before processing (size limit check)."""
 
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        # Only check POST/PUT/PATCH with file uploads
         if request.method in ('POST', 'PUT', 'PATCH'):
             content_type = request.content_type or ''
 
             if 'multipart/form-data' in content_type:
-                # Check Content-Length header first (fast fail)
                 content_length = request.META.get('CONTENT_LENGTH')
                 if content_length:
                     try:
                         if int(content_length) > MAX_UPLOAD_SIZE:
                             logger.warning(
                                 f"Upload rejected: Content-Length {content_length} "
-                                f"exceeds limit from {request.META.get('REMOTE_ADDR')}"
+                                f"exceeds limit from {get_client_ip(request)}"
                             )
                             return HttpResponseBadRequest(
                                 'File too large. Maximum size is 10MB.',
@@ -110,36 +107,21 @@ class FileUploadValidationMiddleware:
 
 
 class RequestLoggingMiddleware:
-    """
-    Log all API requests for security auditing.
-    """
+    """Log API requests with method, path, user, IP, and response status."""
 
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        # Log API requests
-        if request.path.startswith('/api/'):
-            user = getattr(request, 'user', None)
-            username = user.username if user and user.is_authenticated else 'anonymous'
-            ip = self._get_client_ip(request)
-
-            logger.info(
-                f"{request.method} {request.path} | "
-                f"user={username} | ip={ip}"
-            )
-
         response = self.get_response(request)
 
         if request.path.startswith('/api/'):
+            user = getattr(request, 'user', None)
+            username = user.username if user and user.is_authenticated else 'anonymous'
+
             logger.info(
-                f"{request.method} {request.path} → {response.status_code}"
+                f"{request.method} {request.path} → {response.status_code} | "
+                f"user={username} | ip={get_client_ip(request)}"
             )
 
         return response
-
-    def _get_client_ip(self, request):
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            return x_forwarded_for.split(',')[0].strip()
-        return request.META.get('REMOTE_ADDR', 'unknown')

@@ -228,12 +228,7 @@ async function loadDesigns(page = 1, search = '') {
     tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-sm text-primary/40">Loading...</td></tr>';
 
     try {
-        const url = new URL(`${API_BASE}/designs/`);
-        url.searchParams.set('page', page);
-        if (search) url.searchParams.set('search', search);
-
-        const response = await fetch(url, { credentials: 'include' });
-        const data = await response.json();
+        const data = await API.get('/designs/', { page, ...(search && { search }) });
         const designs = data.results || [];
 
         if (designs.length === 0) {
