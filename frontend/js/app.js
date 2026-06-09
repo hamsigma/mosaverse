@@ -26,21 +26,20 @@ const clearSearch = document.getElementById("clearSearch");
  */
 function renderCard(design) {
   const imageUrl =
-    design.image_url || "https://via.placeholder.com/400x533?text=No+Image";
-  const categoryName = design.category_name || "";
-  const featuredBadge = design.is_featured
-    ? '<span class="featured-badge">Featured</span>'
-    : "";
+    design.image_url || "https://via.placeholder.com/400x400?text=No+Image";
+  const categoryName = design.category_name || "Uncategorized";
 
   return `
-        <a href="detail.html?id=${design.id}" class="design-card fade-in bg-white rounded-card overflow-hidden shadow-sm block">
-            <div class="relative aspect-[3/4] overflow-hidden">
-                <img src="${imageUrl}" alt="${design.title}" class="design-card-image w-full h-full object-cover">
-                ${featuredBadge}
+        <a href="detail.html?id=${design.id}" class="block bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div class="aspect-square overflow-hidden bg-gray-900">
+                <img src="${imageUrl}" alt="${design.title}" class="w-full h-full object-cover">
             </div>
             <div class="p-4">
-                <h3 class="font-epilogue text-sm font-semibold text-primary truncate">${design.title}</h3>
-                ${categoryName ? `<p class="text-xs text-primary/50 mt-1">${categoryName}</p>` : ""}
+                <h3 class="font-epilogue text-sm font-bold text-black truncate">${design.title}</h3>
+                <p class="text-xs text-gray-500 mt-1">${categoryName}</p>
+                <button class="mt-3 w-full py-2 bg-black text-white text-xs font-semibold rounded-lg hover:bg-gray-800 transition-colors">
+                    View Detail
+                </button>
             </div>
         </a>
     `;

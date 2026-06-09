@@ -8,76 +8,86 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        primary: '#0F0F0F', secondary: '#1F1F1F', accent: '#FFFFFF',
-                        highlight: '#7C3AED', bg: '#F5F5F5',
-                    },
                     fontFamily: {
-                        epilogue: ['Epilogue', 'sans-serif'], vietnam: ['Be Vietnam Pro', 'sans-serif'],
+                        epilogue: ['Epilogue', 'sans-serif'],
+                        vietnam: ['Be Vietnam Pro', 'sans-serif'],
                     },
-                    borderRadius: { 'card': '12px', 'btn': '10px', 'input': '10px' }
                 }
             }
         }
     </script>
+    <style>
+        body { background-color: #FAF5F5; }
+    </style>
 </head>
-<body class="bg-bg font-vietnam text-primary min-h-screen flex items-center justify-center">
+<body class="font-vietnam min-h-screen flex items-center justify-center px-4">
 
-    <div class="w-full max-w-md mx-6">
-        <!-- Logo -->
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg p-10">
+        <!-- Logo & Title -->
         <div class="text-center mb-8">
-            <a href="../index.html" class="font-epilogue text-2xl font-bold tracking-tight text-primary">
-                Mosa<span class="text-highlight">Verse</span>
-            </a>
-            <p class="text-sm text-primary/50 mt-2">Admin Panel</p>
+            <h1 class="font-epilogue text-2xl font-bold tracking-tight text-black uppercase">MOSAVERSE</h1>
+            <p class="font-epilogue text-lg font-semibold text-black mt-1">Admin Login</p>
         </div>
 
-        <!-- Login Card -->
-        <div class="bg-white rounded-card shadow-sm p-8">
-            <h1 class="font-epilogue text-xl font-bold mb-6">Sign In</h1>
+        <!-- Error message -->
+        <div id="errorMsg" class="hidden mb-5 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl">
+            Username atau password salah.
+        </div>
 
-            <!-- Error message -->
-            <div id="errorMsg" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-btn">
-                Username atau password salah.
-            </div>
-
-            <form id="loginForm" class="space-y-5">
-                <!-- Username -->
-                <div>
-                    <label for="username" class="block text-xs font-bold uppercase tracking-wider text-primary/50 mb-2">Username</label>
+        <form id="loginForm" class="space-y-5">
+            <!-- Username -->
+            <div>
+                <label for="username" class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">Username</label>
+                <div class="relative">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
                     <input 
                         type="text" id="username" name="username" required autocomplete="username"
-                        class="w-full px-4 py-3 bg-bg border border-primary/10 rounded-input text-sm text-primary placeholder-primary/30 outline-none focus:border-highlight focus:ring-2 focus:ring-highlight/20 transition-all"
-                        placeholder="Enter your username"
+                        class="w-full pl-11 pr-4 py-3 bg-gray-100 border border-transparent rounded-xl text-sm text-black placeholder-gray-400 outline-none focus:border-black focus:bg-white transition-all"
+                        placeholder="Enter admin username"
                     >
                 </div>
+            </div>
 
-                <!-- Password -->
-                <div>
-                    <label for="password" class="block text-xs font-bold uppercase tracking-wider text-primary/50 mb-2">Password</label>
+            <!-- Password -->
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <label for="password" class="block text-xs font-bold uppercase tracking-wider text-gray-400">Password</label>
+                    <a href="#" class="text-xs text-gray-400 hover:text-black transition-colors">Forgot?</a>
+                </div>
+                <div class="relative">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
                     <input 
                         type="password" id="password" name="password" required autocomplete="current-password"
-                        class="w-full px-4 py-3 bg-bg border border-primary/10 rounded-input text-sm text-primary placeholder-primary/30 outline-none focus:border-highlight focus:ring-2 focus:ring-highlight/20 transition-all"
-                        placeholder="Enter your password"
+                        class="w-full pl-11 pr-4 py-3 bg-gray-100 border border-transparent rounded-xl text-sm text-black placeholder-gray-400 outline-none focus:border-black focus:bg-white transition-all"
+                        placeholder="••••••••"
                     >
                 </div>
+            </div>
 
-                <!-- Submit -->
-                <button 
-                    type="submit" id="loginBtn"
-                    class="w-full py-3 bg-primary text-accent text-sm font-semibold rounded-btn hover:bg-highlight transition-colors disabled:opacity-50"
-                >
-                    Sign In
-                </button>
-            </form>
+            <!-- Submit -->
+            <button 
+                type="submit" id="loginBtn"
+                class="w-full py-3.5 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+                Login to Terminal
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+            </button>
+        </form>
+
+        <!-- Divider & Footer -->
+        <div class="mt-6 pt-5 border-t border-gray-100">
+            <p class="text-center text-xs text-black/40">Restricted access. Authorized personnel only.</p>
         </div>
-
-        <p class="text-center text-xs text-primary/30 mt-6">&copy; 2026 MosaVerse</p>
     </div>
 
     <script src="js/api.js"></script>

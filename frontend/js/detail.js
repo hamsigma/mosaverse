@@ -22,17 +22,26 @@ async function loadDesignDetail() {
 
     // Populate the page
     document.getElementById("designTitle").textContent = design.title;
-    document.getElementById("breadcrumbTitle").textContent = design.title;
     document.title = `MosaVerse — ${design.title}`;
 
     // Image
     const imageUrl =
       design.image_url ||
       design.image ||
-      "https://via.placeholder.com/600x800?text=No+Image";
+      "https://via.placeholder.com/600x600?text=No+Image";
     const imgEl = document.getElementById("designImage");
     imgEl.src = imageUrl;
     imgEl.alt = design.title;
+
+    // Upload date
+    const dateEl = document.getElementById("designDate");
+    const date = new Date(design.created_at);
+    const formatted = date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    dateEl.textContent = `Uploaded: ${formatted}`;
 
     // Category
     const categoryEl = document.getElementById("designCategory");
@@ -47,18 +56,9 @@ async function loadDesignDetail() {
     descEl.textContent =
       design.description || "Belum ada deskripsi untuk desain ini.";
 
-    // Dates
-    document.getElementById("designCreated").textContent = formatDate(
-      design.created_at,
-    );
-    document.getElementById("designUpdated").textContent = formatDate(
-      design.updated_at,
-    );
-
     // Show content
     detailLoading.classList.add("hidden");
     detailContent.classList.remove("hidden");
-    detailContent.classList.add("fade-in");
   } catch (error) {
     console.error("Error loading design:", error);
     showError();
@@ -71,7 +71,6 @@ async function loadDesignDetail() {
 function showError() {
   detailLoading.classList.add("hidden");
   errorState.classList.remove("hidden");
-  errorState.classList.add("fade-in");
 }
 
 // Initialize

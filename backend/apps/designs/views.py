@@ -1,6 +1,8 @@
 from rest_framework import generics, permissions, filters, status
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from .models import Category, Design
 from .serializers import (
     CategorySerializer,
@@ -9,6 +11,7 @@ from .serializers import (
 )
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class CategoryListCreateView(generics.ListCreateAPIView):
     """List semua kategori atau buat kategori baru (admin only)."""
     queryset = Category.objects.all()
@@ -20,6 +23,7 @@ class CategoryListCreateView(generics.ListCreateAPIView):
         return [permissions.AllowAny()]
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     """Detail, update, atau hapus kategori (admin only untuk write)."""
     queryset = Category.objects.all()
@@ -50,6 +54,7 @@ class DesignDetailView(generics.RetrieveAPIView):
     lookup_field = 'pk'
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class DesignCreateView(generics.CreateAPIView):
     """Buat desain baru (admin only)."""
     queryset = Design.objects.all()
@@ -57,6 +62,7 @@ class DesignCreateView(generics.CreateAPIView):
     permission_classes = [permissions.IsAdminUser]
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class DesignUpdateView(generics.UpdateAPIView):
     """Update desain (admin only)."""
     queryset = Design.objects.all()
@@ -65,6 +71,7 @@ class DesignUpdateView(generics.UpdateAPIView):
     lookup_field = 'pk'
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class DesignDeleteView(generics.DestroyAPIView):
     """Hapus desain (admin only)."""
     queryset = Design.objects.all()

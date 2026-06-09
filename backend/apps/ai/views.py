@@ -10,6 +10,7 @@ from rest_framework.decorators import api_view, permission_classes, throttle_cla
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 from rest_framework.response import Response
+from django.views.decorators.csrf import csrf_exempt
 
 from apps.ai.services import (
     smart_search,
@@ -28,6 +29,7 @@ class AIRateThrottle(AnonRateThrottle):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @throttle_classes([AIRateThrottle])
+@csrf_exempt
 def ai_search(request):
     """
     AI Smart Search — cari desain dengan natural language.
@@ -76,6 +78,7 @@ def ai_search(request):
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
 @throttle_classes([AIRateThrottle])
+@csrf_exempt
 def generate_description(request):
     """
     Generate deskripsi desain menggunakan AI.
@@ -116,6 +119,7 @@ def generate_description(request):
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
 @throttle_classes([AIRateThrottle])
+@csrf_exempt
 def generate_category(request):
     """
     Generate kategori desain menggunakan AI.

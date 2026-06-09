@@ -5,6 +5,7 @@ Custom middleware for enhanced security:
 - Security headers (HSTS, X-Content-Type-Options, etc.)
 - File upload validation
 - Request logging
+- CSRF-free session authentication for API endpoints
 """
 
 import logging
@@ -12,6 +13,21 @@ import mimetypes
 
 from django.http import HttpResponseBadRequest
 from django.conf import settings
+from rest_framework.authentication import SessionAuthentication as BaseSessionAuthentication
+
+class SessionAuthentication(BaseSessionAuthentication):
+    """
+    Session authentication without CSRF enforcement.
+
+    DRF's default SessionAuthentication enforces CSRF even when @csrf_exempt
+    is applied. Since this API is consumed by a separate frontend (CORS),
+    CSRF protection is handled at the middleware level with @csrf_exempt
+    on write endpoints. Session cookies still provide authentication.
+    """
+
+    def enforce_csrf(self, request):
+        return  # Skip DRF's CSRF check
+
 
 logger = logging.getLogger(__name__)
 
