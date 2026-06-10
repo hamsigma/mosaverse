@@ -31,7 +31,7 @@ const AdminAPI = {
     async logout() {
         try { await API.post('/logout/'); } catch (_) { /* ignore */ }
         localStorage.removeItem('mosaverse_user');
-        window.location.href = 'admin-login.html';
+        window.location.href = 'index.html';
     },
 
     // ─── Dashboard ─────────────────────────────────────

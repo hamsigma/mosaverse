@@ -153,8 +153,8 @@ form.addEventListener('submit', async (e) => {
         const formData = new FormData();
         formData.append('title', titleInput.value.trim());
         formData.append('description', descriptionInput.value.trim());
-        formData.append('is_featured', false);
-        formData.append('is_published', true);
+        formData.append('is_featured', 'false');
+        formData.append('is_published', 'true');
 
         if (categorySelect.value) formData.append('category_id', categorySelect.value);
 
@@ -179,7 +179,12 @@ form.addEventListener('submit', async (e) => {
         loadDesigns(currentPage);
     } catch (e) {
         console.error('Save error:', e);
-        showToast('Gagal menyimpan desain.', 'error');
+        const msg = e.message || '';
+        if (msg.includes('image') || msg.includes('No file')) {
+            showToast('Upload gambar desain untuk melanjutkan.', 'error');
+        } else {
+            showToast('Gagal menyimpan desain. Periksa kembali form Anda.', 'error');
+        }
     } finally {
         saveBtn.disabled = false;
         saveBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg> Simpan Desain';
@@ -228,7 +233,7 @@ async function loadDesigns(page = 1, search = '') {
     tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-sm text-primary/40">Loading...</td></tr>';
 
     try {
-        const data = await API.get('/designs/', { page, ...(search && { search }) });
+        const data = await API.get('/designs/', { page, admin: 1, ...(search && { search }) });
         const designs = data.results || [];
 
         if (designs.length === 0) {

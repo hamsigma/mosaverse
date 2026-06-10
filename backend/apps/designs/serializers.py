@@ -45,6 +45,10 @@ class DesignSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=True
     )
+    image = serializers.ImageField(
+        required=False, allow_null=True,
+        validators=[validate_image_file]
+    )
     image_url = serializers.SerializerMethodField()
 
     class Meta:
@@ -74,6 +78,9 @@ class DesignSerializer(serializers.ModelSerializer):
     def validate_image(self, value):
         if value:
             validate_image_file(value)
+        elif self.instance is None:
+            # Creating new design — image is required
+            raise serializers.ValidationError('Image is required for new designs.')
         return value
 
 
@@ -86,7 +93,7 @@ class DesignListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Design
         fields = ['id', 'title', 'slug', 'image', 'image_url',
-                  'category_name', 'is_featured', 'created_at']
+                  'category_name', 'is_featured', 'is_published', 'created_at']
 
     def get_image_url(self, obj):
         return _get_image_url(obj, self.context)

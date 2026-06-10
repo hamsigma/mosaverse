@@ -40,13 +40,21 @@ class CategoryDetailView(CsrfExemptMixin, generics.RetrieveUpdateDestroyAPIView)
 # ─── Design Views (Public) ─────────────────────────────
 
 class DesignListView(generics.ListAPIView):
-    """List semua desain untuk gallery (public)."""
-    queryset = Design.objects.filter(is_published=True).select_related('category')
+    """List semua desain untuk gallery (public). Admin can see all via ?admin=1."""
     serializer_class = DesignListSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'description', 'category__name']
     ordering_fields = ['created_at', 'title', 'is_featured']
     ordering = ['-created_at']
+
+    def get_queryset(self):
+        qs = Design.objects.select_related('category')
+        # Admin can see all designs (including drafts) via ?admin=1
+        if (self.request.query_params.get('admin') == '1'
+                and self.request.user.is_authenticated
+                and self.request.user.is_staff):
+            return qs.all()
+        return qs.filter(is_published=True)
 
 
 class DesignDetailView(generics.RetrieveAPIView):

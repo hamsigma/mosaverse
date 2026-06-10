@@ -221,19 +221,18 @@ function clearSearchResults() {
 
 // ─── Event Listeners ───────────────────────────────────
 
-searchBtn.addEventListener("click", () => performSearch(searchInput.value));
-searchInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") performSearch(searchInput.value);
-});
-clearSearch.addEventListener("click", clearSearchResults);
-
-document.querySelector('[data-category="all"]').addEventListener("click", () => {
-  setActiveCategory("all");
-});
-
 // ─── Init ──────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (searchBtn) searchBtn.addEventListener("click", () => performSearch(searchInput.value));
+  if (searchInput) searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") performSearch(searchInput.value);
+  });
+  if (clearSearch) clearSearch.addEventListener("click", clearSearchResults);
+
+  const allBtn = categoryFilter?.querySelector('[data-category="all"]');
+  if (allBtn) allBtn.addEventListener("click", () => setActiveCategory("all"));
+
   loadDesigns();
   loadCategories();
 });
