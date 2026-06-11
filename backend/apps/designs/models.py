@@ -41,7 +41,7 @@ class Design(models.Model):
         related_name='designs'
     )
     is_featured = models.BooleanField(default=False)
-    is_published = models.BooleanField(default=True)
+    is_published = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

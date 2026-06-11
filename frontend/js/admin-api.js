@@ -54,6 +54,10 @@ const AdminAPI = {
         return API.delete(`/designs/${id}/delete/`);
     },
 
+    togglePublish(id) {
+        return API.post(`/designs/${id}/toggle-publish/`);
+    },
+
     // ─── AI ────────────────────────────────────────────
 
     generateDescription(title, category, designId) {
@@ -62,6 +66,24 @@ const AdminAPI = {
 
     generateCategory(title, description, designId) {
         return API.post('/ai/generate-category/', { title, description, design_id: designId });
+    },
+
+    // ─── Category CRUD ─────────────────────────────────
+
+    getCategories() {
+        return API.get('/categories/');
+    },
+
+    createCategory(name, description = '') {
+        return API.post('/categories/', { name, description });
+    },
+
+    updateCategory(id, data) {
+        return API.put(`/categories/${id}/`, data);
+    },
+
+    deleteCategory(id) {
+        return API.delete(`/categories/${id}/`);
     },
 };
 
@@ -77,6 +99,7 @@ function showToast(message, type = 'success') {
     const colorMap = {
         success: ['bg-green-600', 'text-white'],
         error: ['bg-red-600', 'text-white'],
+        warning: ['bg-yellow-500', 'text-white'],
     };
     const colors = colorMap[type] || ['bg-gray-900', 'text-white'];
     toast.classList.add(...colors);

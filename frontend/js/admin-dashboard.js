@@ -18,8 +18,9 @@ async function loadDashboard() {
         const stats = data.stats || {};
 
         document.getElementById('statTotalDesigns').textContent = formatNumber(stats.total_designs || 0);
+        document.getElementById('statPublished').textContent = formatNumber(stats.published_designs || 0);
+        document.getElementById('statPending').textContent = formatNumber(stats.pending_designs || 0);
         document.getElementById('statTotalCategories').textContent = formatNumber(stats.total_categories || 0);
-        document.getElementById('statFeatured').textContent = formatNumber(stats.featured_designs || 0);
 
         // Recent designs
         const tbody = document.getElementById('recentDesigns');

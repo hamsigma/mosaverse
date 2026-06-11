@@ -154,7 +154,8 @@ form.addEventListener('submit', async (e) => {
         formData.append('title', titleInput.value.trim());
         formData.append('description', descriptionInput.value.trim());
         formData.append('is_featured', 'false');
-        formData.append('is_published', 'true');
+
+        // Only send is_published when editing; new designs default to pending (false)
 
         if (categorySelect.value) formData.append('category_id', categorySelect.value);
 
@@ -172,7 +173,7 @@ form.addEventListener('submit', async (e) => {
             showToast('Desain berhasil diupdate!');
         } else {
             await AdminAPI.createDesign(formData);
-            showToast('Desain berhasil dibuat!');
+            showToast('Desain berhasil dibuat! Status: Pending.', 'warning');
         }
 
         resetForm();
@@ -230,7 +231,7 @@ async function editDesign(id) {
 // ─── Catalog: Load Designs ─────────────────────────────
 async function loadDesigns(page = 1, search = '') {
     currentPage = page;
-    tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-sm text-primary/40">Loading...</td></tr>';
+    tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-sm text-primary/40">Loading...</td></tr>';
 
     try {
         const data = await API.get('/designs/', { page, admin: 1, ...(search && { search }) });
@@ -238,7 +239,7 @@ async function loadDesigns(page = 1, search = '') {
 
         if (designs.length === 0) {
             tableBody.innerHTML = `
-                <tr><td colspan="4" class="px-6 py-12 text-center">
+                <tr><td colspan="5" class="px-6 py-12 text-center">
                     <p class="text-sm text-primary/40">Belum ada desain.</p>
                 </td></tr>`;
             designsInfo.textContent = '0 desain';
@@ -249,8 +250,26 @@ async function loadDesigns(page = 1, search = '') {
         tableBody.innerHTML = designs.map(d => {
             const imageUrl = d.image_url || 'https://via.placeholder.com/48?text=?';
             const catName = d.category_name || '—';
-            const isDraft = !d.is_published;
+            const isPublished = d.is_published;
             const dateStr = formatDate(d.created_at);
+
+            const statusBadge = isPublished
+                ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white bg-green-600 rounded-full">
+                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                       Published
+                   </span>`
+                : `<span class="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-yellow-700 bg-yellow-100 rounded-full">
+                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                       Pending
+                   </span>`;
+
+            const toggleBtn = isPublished
+                ? `<button onclick="togglePublish(${d.id})" class="p-2 text-primary/40 hover:text-yellow-600 transition-colors" title="Set to Pending">
+                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                   </button>`
+                : `<button onclick="togglePublish(${d.id})" class="p-2 text-green-500 hover:text-green-700 transition-colors" title="Approve & Publish">
+                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                   </button>`;
 
             return `
                 <tr class="border-b border-primary/5 hover:bg-primary/[0.02] transition-colors">
@@ -261,13 +280,17 @@ async function loadDesigns(page = 1, search = '') {
                     </td>
                     <td class="px-6 py-3">
                         <p class="text-sm font-semibold">${d.title}</p>
-                        <p class="text-[11px] text-primary/40 mt-0.5">${isDraft ? 'Draft' : 'Ditambahkan'} ${dateStr}</p>
+                        <p class="text-[11px] text-primary/40 mt-0.5">Ditambahkan ${dateStr}</p>
                     </td>
                     <td class="px-6 py-3">
                         <span class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-accent bg-primary rounded-full">${catName}</span>
                     </td>
+                    <td class="px-6 py-3 text-center">
+                        ${statusBadge}
+                    </td>
                     <td class="px-6 py-3 text-right">
                         <div class="flex items-center justify-end gap-1">
+                            ${toggleBtn}
                             <button onclick="editDesign(${d.id})" class="p-2 text-primary/40 hover:text-highlight transition-colors" title="Edit">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                             </button>
@@ -298,9 +321,25 @@ async function loadDesigns(page = 1, search = '') {
 
     } catch (e) {
         console.error('Error loading designs:', e);
-        tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-12 text-center text-sm text-red-500">Gagal memuat desain.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-sm text-red-500">Gagal memuat desain.</td></tr>';
     }
 }
+
+// ─── Toggle Publish (Approve / Pend) ─────────────────────
+async function togglePublish(id) {
+    try {
+        const data = await AdminAPI.togglePublish(id);
+        if (data.is_published) {
+            showToast(`Desain berhasil di-approve! Sudah publish ke gallery.`, 'success');
+        } else {
+            showToast(`Desain di-set ke Pending. Tidak tampil di gallery.`, 'warning');
+        }
+        loadDesigns(currentPage, searchInput.value.trim());
+    } catch (e) {
+        showToast('Gagal mengubah status desain.', 'error');
+    }
+}
+window.togglePublish = togglePublish;
 
 // ─── Search ────────────────────────────────────────────
 searchInput.addEventListener('input', (e) => {
@@ -341,6 +380,150 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', async () =
         btn.textContent = 'Hapus';
     }
 });
+
+// ─── Category Management Modal ─────────────────────────
+const categoryModal = document.getElementById('categoryModal');
+const categoryListContainer = document.getElementById('categoryListContainer');
+const newCategoryNameInput = document.getElementById('newCategoryName');
+let editingCategoryId = null;
+
+document.getElementById('manageCategoryBtn').addEventListener('click', openCategoryModal);
+
+function openCategoryModal() {
+    categoryModal.classList.remove('hidden');
+    loadCategoryList();
+}
+
+function closeCategoryModal() {
+    categoryModal.classList.add('hidden');
+    editingCategoryId = null;
+    newCategoryNameInput.value = '';
+    // Refresh the form's category dropdown
+    loadCategories();
+}
+// Make globally accessible for onclick
+window.closeCategoryModal = closeCategoryModal;
+
+async function loadCategoryList() {
+    categoryListContainer.innerHTML = '<p class="text-sm text-primary/40 text-center py-6">Loading...</p>';
+    try {
+        const data = await AdminAPI.getCategories();
+        const categories = data.results || data || [];
+
+        if (categories.length === 0) {
+            categoryListContainer.innerHTML = '<p class="text-sm text-primary/40 text-center py-6">Belum ada kategori.</p>';
+            return;
+        }
+
+        categoryListContainer.innerHTML = categories.map(cat => `
+            <div id="cat-item-${cat.id}" class="group flex items-center gap-2 p-3 bg-bg rounded-btn hover:bg-primary/5 transition-colors">
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold truncate">${cat.name}</p>
+                    <p class="text-[11px] text-primary/40">${cat.design_count || 0} desain</p>
+                </div>
+                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="startEditCategory(${cat.id}, '${cat.name.replace(/'/g, "\\'")}')"
+                        class="p-1.5 text-primary/40 hover:text-highlight transition-colors" title="Edit">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </button>
+                    <button onclick="deleteCategoryConfirm(${cat.id}, '${cat.name.replace(/'/g, "\\'")}')"
+                        class="p-1.5 text-primary/40 hover:text-red-600 transition-colors" title="Hapus">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.error('Error loading categories:', e);
+        categoryListContainer.innerHTML = '<p class="text-sm text-red-500 text-center py-6">Gagal memuat kategori.</p>';
+    }
+}
+
+// Add category
+document.getElementById('addCategoryBtn').addEventListener('click', addCategory);
+newCategoryNameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); addCategory(); }
+});
+
+async function addCategory() {
+    const name = newCategoryNameInput.value.trim();
+    if (!name) { showToast('Masukkan nama kategori.', 'error'); return; }
+
+    const btn = document.getElementById('addCategoryBtn');
+    btn.disabled = true;
+    btn.textContent = '...';
+    try {
+        await AdminAPI.createCategory(name);
+        showToast(`Kategori "${name}" berhasil ditambahkan!`);
+        newCategoryNameInput.value = '';
+        loadCategoryList();
+    } catch (e) {
+        const msg = e.message || '';
+        if (msg.includes('unique') || msg.includes('already exists') || msg.includes('duplicate')) {
+            showToast('Kategori sudah ada.', 'error');
+        } else {
+            showToast('Gagal menambahkan kategori.', 'error');
+        }
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '+ Tambah';
+    }
+}
+
+// Edit category (inline)
+function startEditCategory(id, currentName) {
+    editingCategoryId = id;
+    const item = document.getElementById(`cat-item-${id}`);
+    if (!item) return;
+
+    item.innerHTML = `
+        <div class="flex-1 flex gap-2">
+            <input type="text" id="editCatName-${id}" value="${currentName}"
+                class="flex-1 px-2.5 py-1.5 bg-white border border-highlight rounded-btn text-sm outline-none focus:ring-2 focus:ring-highlight/20">
+            <button onclick="saveEditCategory(${id})" class="px-3 py-1.5 bg-highlight text-white text-xs font-bold rounded-btn hover:bg-highlight/80 transition-colors">Simpan</button>
+            <button onclick="loadCategoryList()" class="px-3 py-1.5 border border-primary/10 text-xs font-semibold rounded-btn hover:bg-primary/5 transition-colors">Batal</button>
+        </div>
+    `;
+    const editInput = document.getElementById(`editCatName-${id}`);
+    editInput.focus();
+    editInput.select();
+    editInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); saveEditCategory(id); }
+        if (e.key === 'Escape') loadCategoryList();
+    });
+}
+// Make globally accessible
+window.startEditCategory = startEditCategory;
+
+async function saveEditCategory(id) {
+    const input = document.getElementById(`editCatName-${id}`);
+    const newName = input ? input.value.trim() : '';
+    if (!newName) { showToast('Nama kategori tidak boleh kosong.', 'error'); return; }
+
+    try {
+        await AdminAPI.updateCategory(id, { name: newName });
+        showToast('Kategori berhasil diupdate!');
+        editingCategoryId = null;
+        loadCategoryList();
+    } catch (e) {
+        showToast('Gagal mengupdate kategori.', 'error');
+    }
+}
+window.saveEditCategory = saveEditCategory;
+
+// Delete category
+async function deleteCategoryConfirm(id, name) {
+    if (!confirm(`Hapus kategori "${name}"?\nDesain dalam kategori ini tidak akan terhapus.`)) return;
+
+    try {
+        await AdminAPI.deleteCategory(id);
+        showToast(`Kategori "${name}" berhasil dihapus.`);
+        loadCategoryList();
+    } catch (e) {
+        showToast('Gagal menghapus kategori.', 'error');
+    }
+}
+window.deleteCategoryConfirm = deleteCategoryConfirm;
 
 // ─── Initialize ────────────────────────────────────────
 loadCategories();

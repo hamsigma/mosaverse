@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MosaVerse — About</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0F0F0F',
+                        secondary: '#1F1F1F',
+                        accent: '#FFFFFF',
+                        highlight: '#7C3AED',
+                        bg: '#F5F5F5',
+                    },
+                    fontFamily: {
+                        epilogue: ['Epilogue', 'sans-serif'],
+                        vietnam: ['Be Vietnam Pro', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-bg font-vietnam min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-black">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="font-epilogue text-xl font-bold tracking-tight text-white uppercase">
+                    MOSAVERSE
+                </a>
+                <div class="flex items-center gap-8">
+                    <a href="index.html" class="text-sm text-gray-400 uppercase hover:text-white transition-colors">
+                        HOME
+                    </a>
+                    <a href="about.html" class="text-sm font-semibold text-white uppercase relative pb-1">
+                        ABOUT
+                        <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                    </a>
+                    <a href="admin-login.html" class="text-sm text-gray-400 uppercase hover:text-white transition-colors">
+                        ADMIN LOGIN
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- About Section -->
+    <section class="max-w-4xl mx-auto px-6 lg:px-8 py-16">
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <!-- Logo -->
+            <div class="flex justify-center pt-12 pb-8">
+                <div class="w-48 h-48 rounded-2xl overflow-hidden shadow-lg">
+                    <img src="images/mosaverse-logo.jpg" alt="MosaVerse Logo" class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="px-8 pb-12 text-center">
+                <h1 class="font-epilogue text-4xl font-bold tracking-widest text-primary mb-6">MOSAVERSE</h1>
+
+                <p class="text-base text-primary/70 leading-relaxed max-w-2xl mx-auto mb-10">
+                    Mosaverse started from late-night sketches and a passion for creating something real.
+                    What began as small ideas on paper grew into a creative space where art meets fabrics,
+                    and every line tells a story.
+                </p>
+
+                <!-- Divider -->
+                <div class="w-16 h-px bg-primary/10 mx-auto mb-8"></div>
+
+                <!-- Contact -->
+                <div>
+                    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/40 mb-4">Contact</p>
+                    <a href="https://www.instagram.com/mosa.vers/" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white text-sm font-semibold rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                        </svg>
+                        @mosa.verse
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto px-6 lg:px-8 py-8 text-center">
+        <p class="text-xs text-primary/30">&copy; 2025 MosaVerse. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

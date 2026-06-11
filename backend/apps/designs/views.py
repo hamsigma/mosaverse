@@ -1,4 +1,6 @@
-from rest_framework import generics, permissions, filters
+from rest_framework import generics, permissions, filters, status
+from rest_framework.decorators import api_view, permission_classes as perm_classes
+from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from .models import Category, Design
 from .serializers import CategorySerializer, DesignSerializer, DesignListSerializer
@@ -86,3 +88,25 @@ class DesignDeleteView(CsrfExemptMixin, generics.DestroyAPIView):
     queryset = Design.objects.all()
     permission_classes = [permissions.IsAdminUser]
     lookup_field = 'pk'
+
+
+# ─── Toggle Publish (Admin) ─────────────────────────────
+
+@csrf_exempt
+@api_view(['POST'])
+@perm_classes([permissions.IsAdminUser])
+def toggle_publish(request, pk):
+    """Toggle is_published status for a design (admin only)."""
+    try:
+        design = Design.objects.get(pk=pk)
+    except Design.DoesNotExist:
+        return Response({'error': 'Design not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    design.is_published = not design.is_published
+    design.save(update_fields=['is_published', 'updated_at'])
+
+    return Response({
+        'id': design.id,
+        'is_published': design.is_published,
+        'message': 'Design approved.' if design.is_published else 'Design set to pending.'
+    })

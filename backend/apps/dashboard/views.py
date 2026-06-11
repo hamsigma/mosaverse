@@ -13,6 +13,7 @@ def dashboard_stats(request):
     total_categories = Category.objects.count()
     featured_designs = Design.objects.filter(is_featured=True).count()
     published_designs = Design.objects.filter(is_published=True).count()
+    pending_designs = Design.objects.filter(is_published=False).count()
 
     # Recent designs (last 10)
     recent = Design.objects.select_related('category')[:10]
@@ -25,6 +26,7 @@ def dashboard_stats(request):
             'total_categories': total_categories,
             'featured_designs': featured_designs,
             'published_designs': published_designs,
+            'pending_designs': pending_designs,
         },
         'recent_designs': recent_serializer.data
     })

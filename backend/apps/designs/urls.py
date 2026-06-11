@@ -14,4 +14,5 @@ urlpatterns = [
     path('designs/create/', views.DesignCreateView.as_view(), name='design-create'),
     path('designs/<int:pk>/update/', views.DesignUpdateView.as_view(), name='design-update'),
     path('designs/<int:pk>/delete/', views.DesignDeleteView.as_view(), name='design-delete'),
+    path('designs/<int:pk>/toggle-publish/', views.toggle_publish, name='design-toggle-publish'),
 ]
