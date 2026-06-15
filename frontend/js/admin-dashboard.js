@@ -5,6 +5,12 @@
 AdminAPI.requireAuth();
 setupLogout();
 
+// Show logged-in admin username
+const user = AdminAPI.getUser();
+if (user && user.username) {
+    document.getElementById('adminUsername').textContent = user.username;
+}
+
 function formatNumber(num) {
     if (num >= 1000) {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');

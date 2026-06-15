@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MosaVerse Admin — Kelola Desain</title>
+    <link rel="icon" type="image/jpeg" href="images/mosaverse-logo.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +25,10 @@
     <!-- Admin Sidebar -->
     <aside id="adminSidebar" class="fixed inset-y-0 left-0 w-60 bg-primary text-accent z-50 flex flex-col">
         <div class="p-6">
-            <a href="../index.html" class="font-epilogue text-base font-bold tracking-widest text-accent uppercase">MosaVerse</a>
+            <a href="../index.html" class="flex items-center gap-2.5">
+                <img src="images/mosaverse-logo.jpg" alt="MosaVerse" class="w-8 h-8 rounded-lg object-cover">
+                <span class="font-epilogue text-base font-bold tracking-widest text-accent uppercase">MosaVerse</span>
+            </a>
             <p class="text-[10px] text-accent/40 tracking-wider mt-1">Admin Control</p>
         </div>
         <nav class="flex-1 px-4 space-y-1">
@@ -188,6 +192,11 @@
             </div>
         </div>
     </main>
+
+    <!-- Footer -->
+    <footer class="ml-60 text-center py-6">
+        <p class="text-xs text-primary/30">&copy; 2025 MosaVerse. All rights reserved.</p>
+    </footer>
 
     <!-- Category Management Modal -->
     <div id="categoryModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center">
