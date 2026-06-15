@@ -8,8 +8,8 @@ import os
 import mimetypes
 from django.core.exceptions import ValidationError
 
-# Max image size: 10MB
-MAX_IMAGE_SIZE = 10 * 1024 * 1024
+# Max image size: 50MB (must match middleware MAX_UPLOAD_SIZE)
+MAX_IMAGE_SIZE = 50 * 1024 * 1024
 
 # Allowed image extensions
 ALLOWED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp']

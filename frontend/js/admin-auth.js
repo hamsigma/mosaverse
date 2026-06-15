@@ -22,8 +22,6 @@ loginForm.addEventListener('submit', async (e) => {
 
     try {
         const result = await AdminAPI.login(username, password);
-        // Fetch CSRF token after login for subsequent POST requests
-        await fetch(`${API_BASE}/csrf/`, { credentials: 'include' });
         window.location.href = 'admin-dashboard.html';
     } catch (error) {
         console.error('Login error:', error);
@@ -31,6 +29,6 @@ loginForm.addEventListener('submit', async (e) => {
         errorMsg.classList.remove('hidden');
     } finally {
         loginBtn.disabled = false;
-        loginBtn.innerHTML = 'Login to Terminal <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>';
+        loginBtn.innerHTML = 'Login to Dashboard <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>';
     }
 });

@@ -6,14 +6,9 @@
  * credential management, and CSRF token injection.
  */
 
-const API_BASE = "http://127.0.0.1:8000/api";
+const API_BASE = "http://localhost:8000/api";
 
 // ─── Utilities ─────────────────────────────────────────
-
-function getCookie(name) {
-  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
-  return match ? decodeURIComponent(match[1]) : null;
-}
 
 function formatDate(dateString) {
   if (!dateString) return "-";
@@ -33,8 +28,8 @@ function getUrlParam(name) {
 function _buildHeaders({ json = true } = {}) {
   const headers = {};
   if (json) headers["Content-Type"] = "application/json";
-  const csrf = getCookie("csrftoken");
-  if (csrf) headers["X-CSRFToken"] = csrf;
+  // Note: CSRF is handled server-side via SessionAuthentication bypass.
+  // CSRF_COOKIE_HTTPONLY=True prevents JS access; not needed here.
   return headers;
 }
 

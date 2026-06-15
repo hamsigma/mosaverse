@@ -8,7 +8,7 @@ Views only handle HTTP request/response mapping and input validation.
 import functools
 
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes, throttle_classes
+from rest_framework.decorators import api_view, throttle_classes
 from rest_framework.permissions import IsAdminUser, AllowAny
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.response import Response
@@ -28,39 +28,50 @@ class AIRateThrottle(AnonRateThrottle):
     rate = '10/min'
 
 
-def ai_endpoint(view_func):
+def ai_endpoint(perms=None):
     """
-    Decorator that wraps AI view functions with:
+    Decorator factory that wraps AI view functions with:
     - CSRF exemption
     - Rate throttling
+    - Permission classes (passed as argument)
     - Centralized error handling (AIServiceError, RateLimitExceeded)
+
+    Usage: @ai_endpoint(AllowAny) or @ai_endpoint(IsAdminUser)
     """
-    @functools.wraps(view_func)
-    @api_view(['POST'])
-    @throttle_classes([AIRateThrottle])
-    @csrf_exempt
-    def wrapper(request, *args, **kwargs):
-        try:
-            return view_func(request, *args, **kwargs)
-        except RateLimitExceeded as e:
-            return Response({'error': str(e)}, status=status.HTTP_429_TOO_MANY_REQUESTS)
-        except AIServiceError as e:
-            return Response(
-                {'error': f'Layanan AI sedang tidak tersedia. Silakan coba lagi. ({e})'},
-                status=status.HTTP_503_SERVICE_UNAVAILABLE,
-            )
-        except Exception as e:
-            return Response(
-                {'error': f'Terjadi kesalahan tidak terduga: {e}'},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-    return wrapper
+    if perms is None:
+        perms = [AllowAny]
+    if not isinstance(perms, (list, tuple)):
+        perms = [perms]
+
+    def decorator(view_func):
+        @functools.wraps(view_func)
+        @api_view(['POST'])
+        @throttle_classes([AIRateThrottle])
+        @csrf_exempt
+        def wrapper(request, *args, **kwargs):
+            try:
+                return view_func(request, *args, **kwargs)
+            except RateLimitExceeded as e:
+                return Response({'error': str(e)}, status=status.HTTP_429_TOO_MANY_REQUESTS)
+            except AIServiceError as e:
+                return Response(
+                    {'error': f'Layanan AI sedang tidak tersedia. Silakan coba lagi. ({e})'},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
+            except Exception as e:
+                return Response(
+                    {'error': f'Terjadi kesalahan tidak terduga: {e}'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+        wrapper.cls.permission_classes = perms
+        return wrapper
+    return decorator
 
 
 # ─── Endpoints ──────────────────────────────────────────
 
-@ai_endpoint
-@permission_classes([AllowAny])
+@ai_endpoint(AllowAny)
 def ai_search(request):
     """AI Smart Search — cari desain dengan natural language."""
     query = request.data.get('query', '').strip()
@@ -74,8 +85,7 @@ def ai_search(request):
     return Response(result)
 
 
-@ai_endpoint
-@permission_classes([IsAdminUser])
+@ai_endpoint(IsAdminUser)
 def generate_description(request):
     """Generate deskripsi desain menggunakan AI."""
     title = request.data.get('title', '').strip()
@@ -89,8 +99,7 @@ def generate_description(request):
     return Response(result)
 
 
-@ai_endpoint
-@permission_classes([IsAdminUser])
+@ai_endpoint(IsAdminUser)
 def generate_category(request):
     """Generate kategori desain menggunakan AI."""
     title = request.data.get('title', '').strip()

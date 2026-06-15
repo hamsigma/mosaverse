@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
     <script>
         tailwind.config = {
             theme: {
@@ -32,11 +33,11 @@
                     <img src="images/mosaverse-logo.jpg" alt="MosaVerse" class="w-8 h-8 rounded-lg object-cover">
                     <span class="font-epilogue text-xl font-bold tracking-tight text-white uppercase">MOSAVERSE</span>
                 </a>
-                <a href="index.html" class="text-white hover:text-gray-300 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                </a>
+                <div class="flex items-center gap-8">
+                    <a href="index.html" class="text-sm text-gray-400 uppercase hover:text-white transition-colors">HOME</a>
+                    <a href="about.html" class="text-sm text-gray-400 uppercase hover:text-white transition-colors">ABOUT</a>
+                    <a href="admin-login.html" class="text-sm text-gray-400 uppercase hover:text-white transition-colors">ADMIN LOGIN</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -113,10 +114,10 @@
 
     <!-- Footer -->
     <footer class="max-w-7xl mx-auto px-6 lg:px-8 py-8 text-center">
-        <p class="text-xs text-gray-400">&copy; 2025 MosaVerse. All rights reserved.</p>
+        <p class="text-xs text-gray-400">&copy; 2026 MosaVerse. All rights reserved.</p>
     </footer>
 
-    <script src="js/api.js"></script>
-    <script src="js/detail.js"></script>
+    <script src="js/api.js?v=4"></script>
+    <script src="js/detail.js?v=4"></script>
 </body>
 </html>
