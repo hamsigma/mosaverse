@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Design
+from .models import Category, Design, Portfolio, PortfolioImage
 from .validators import validate_image_file, sanitize_string
 
 
@@ -97,3 +97,40 @@ class DesignListSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         return _get_image_url(obj, self.context)
+
+
+# ─── Portfolio Serializers ───────────────────────────────
+
+class PortfolioImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PortfolioImage
+        fields = ['id', 'image', 'image_url', 'caption', 'order']
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        if obj.image and request:
+            return request.build_absolute_uri(obj.image.url)
+        return None
+
+
+class PortfolioSerializer(serializers.ModelSerializer):
+    images = PortfolioImageSerializer(many=True, read_only=True)
+    image_count = serializers.SerializerMethodField()
+    thumbnail_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Portfolio
+        fields = ['id', 'title', 'description', 'thumbnail', 'thumbnail_url',
+                  'order', 'images', 'image_count', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
+
+    def get_image_count(self, obj):
+        return obj.images.count()
+
+    def get_thumbnail_url(self, obj):
+        request = self.context.get('request')
+        if obj.thumbnail and request:
+            return request.build_absolute_uri(obj.thumbnail.url)
+        return None

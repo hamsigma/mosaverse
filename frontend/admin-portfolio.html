@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MosaVerse Admin — Portfolio</title>
+    <link rel="icon" type="image/jpeg" href="images/mosaverse-logo.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0F0F0F',
+                        secondary: '#1F1F1F',
+                        accent: '#FFFFFF',
+                        highlight: '#7C3AED',
+                        bg: '#F5F5F5',
+                    },
+                    fontFamily: {
+                        epilogue: ['Epilogue', 'sans-serif'],
+                        vietnam: ['Be Vietnam Pro', 'sans-serif'],
+                    },
+                    borderRadius: { btn: '10px' },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-bg font-vietnam text-primary min-h-screen">
+
+    <!-- Admin Sidebar -->
+    <aside id="adminSidebar" class="fixed inset-y-0 left-0 w-60 bg-primary text-accent z-50 flex flex-col">
+        <div class="p-6">
+            <a href="../index.html" class="flex items-center gap-2.5">
+                <img src="images/mosaverse-logo.jpg" alt="MosaVerse" class="w-8 h-8 rounded-lg object-cover">
+                <span class="font-epilogue text-base font-bold tracking-widest text-accent uppercase">MosaVerse</span>
+            </a>
+            <p class="text-[10px] text-accent/40 tracking-wider mt-1">Admin Control</p>
+        </div>
+        <nav class="flex-1 px-4 space-y-1">
+            <a href="admin-dashboard.html" class="flex items-center gap-3 px-4 py-2.5 rounded-btn text-sm text-accent/50 hover:text-accent hover:bg-secondary/50 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                Dashboard
+            </a>
+            <a href="admin-designs.html" class="flex items-center gap-3 px-4 py-2.5 rounded-btn text-sm text-accent/50 hover:text-accent hover:bg-secondary/50 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+                Manage Designs
+            </a>
+            <a href="admin-portfolio.html" class="relative flex items-center gap-3 px-4 py-2.5 rounded-btn text-sm font-semibold bg-secondary text-accent">
+                <svg class="w-4 h-4 text-highlight" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                Portfolio
+                <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-highlight rounded-full"></span>
+            </a>
+        </nav>
+        <div class="p-4 border-t border-accent/10 space-y-1">
+            <a href="index.html" class="flex items-center gap-3 px-4 py-2.5 rounded-btn text-sm text-accent/50 hover:text-accent hover:bg-secondary/50 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                View Gallery
+                <svg class="w-3 h-3 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+            <button id="logoutBtn" class="flex items-center gap-3 w-full px-4 py-2.5 rounded-btn text-sm text-accent/50 hover:text-accent hover:bg-secondary/50 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-60 min-h-screen">
+        <!-- Header -->
+        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40">
+            <div class="px-8 py-5 flex items-center justify-between">
+                <div>
+                    <h1 class="font-epilogue text-2xl font-bold">Portfolio</h1>
+                    <p class="text-sm text-primary/50 mt-1">Kelola koleksi desain mockup untuk halaman About.</p>
+                </div>
+                <button onclick="showCreateForm()" class="px-5 py-2.5 bg-highlight text-white text-xs font-bold uppercase tracking-widest rounded-btn hover:bg-highlight/80 transition-colors flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Tambah Portfolio
+                </button>
+            </div>
+        </header>
+
+        <!-- Portfolio List -->
+        <div class="px-8 py-6">
+            <div id="portfolioList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards loaded dynamically -->
+            </div>
+            <div id="emptyState" class="hidden text-center py-16">
+                <svg class="w-16 h-16 mx-auto text-primary/10 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <p class="text-sm text-primary/40">Belum ada portfolio. Klik "Tambah Portfolio" untuk membuat koleksi baru.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create/Edit Modal -->
+    <div id="portfolioModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center">
+        <div class="absolute inset-0 bg-primary/50 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto mx-4">
+            <div class="sticky top-0 bg-white px-6 py-4 border-b border-primary/5 flex items-center justify-between rounded-t-2xl">
+                <h3 id="modalTitle" class="font-epilogue text-lg font-bold">Tambah Portfolio</h3>
+                <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary/5 transition-colors">
+                    <svg class="w-5 h-5 text-primary/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form id="portfolioForm" class="p-6 space-y-4">
+                <input type="hidden" id="editId">
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-primary/40">Judul *</label>
+                    <input id="inputTitle" type="text" required class="mt-1 w-full px-4 py-2.5 bg-primary/[0.03] border border-primary/10 rounded-btn text-sm focus:outline-none focus:ring-2 focus:ring-highlight/30" placeholder="Nama koleksi desain">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-primary/40">Deskripsi</label>
+                    <textarea id="inputDesc" rows="3" class="mt-1 w-full px-4 py-2.5 bg-primary/[0.03] border border-primary/10 rounded-btn text-sm focus:outline-none focus:ring-2 focus:ring-highlight/30 resize-none" placeholder="Deskripsi koleksi desain"></textarea>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-primary/40">Thumbnail (gambar sampul)</label>
+                    <input id="inputThumbnail" type="file" accept="image/*" class="mt-1 w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-btn file:border-0 file:bg-highlight/10 file:text-highlight file:font-semibold hover:file:bg-highlight/20">
+                    <img id="thumbnailPreview" class="hidden mt-2 w-24 h-24 rounded-btn object-cover border border-primary/10">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-primary/40">Urutan</label>
+                    <input id="inputOrder" type="number" value="0" min="0" class="mt-1 w-full px-4 py-2.5 bg-primary/[0.03] border border-primary/10 rounded-btn text-sm focus:outline-none focus:ring-2 focus:ring-highlight/30">
+                </div>
+                <button type="submit" class="w-full py-3 bg-highlight text-white text-xs font-bold uppercase tracking-widest rounded-btn hover:bg-highlight/80 transition-colors">Simpan</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Image Management Modal -->
+    <div id="imageModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center">
+        <div class="absolute inset-0 bg-primary/50 backdrop-blur-sm" onclick="closeImageModal()"></div>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden mx-4 flex flex-col">
+            <div class="px-6 py-4 border-b border-primary/5 flex items-center justify-between">
+                <h3 id="imageModalTitle" class="font-epilogue text-lg font-bold"></h3>
+                <button onclick="closeImageModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-primary/5 transition-colors">
+                    <svg class="w-5 h-5 text-primary/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <!-- Upload new images -->
+                <div class="mb-6 flex gap-3 items-end">
+                    <div class="flex-1">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-primary/40">Upload Gambar Baru</label>
+                        <input id="inputImages" type="file" accept="image/*" multiple class="mt-1 w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-btn file:border-0 file:bg-highlight/10 file:text-highlight file:font-semibold hover:file:bg-highlight/20">
+                    </div>
+                    <button onclick="uploadImages()" class="px-5 py-2.5 bg-highlight text-white text-xs font-bold uppercase tracking-widest rounded-btn hover:bg-highlight/80 transition-colors whitespace-nowrap">Upload</button>
+                </div>
+                <!-- Image grid -->
+                <div id="imageGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="ml-60 text-center py-6">
+        <p class="text-xs text-primary/30">&copy; 2025 MosaVerse. All rights reserved.</p>
+    </footer>
+
+    <!-- Toast -->
+    <div id="toast" class="hidden fixed bottom-6 right-6 z-[110] px-5 py-3 rounded-xl text-sm font-semibold shadow-lg"></div>
+
+    <script src="js/api.js?v=2"></script>
+    <script src="js/admin-api.js?v=2"></script>
+    <script src="js/admin-portfolio.js?v=2"></script>
+</body>
+</html>

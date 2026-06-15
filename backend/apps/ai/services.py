@@ -1,5 +1,5 @@
 """
-MosaVerse AI Service Layer — DeepSeek API Integration
+MosaVerse AI Service Layer — Google Gemini API Integration
 
 Provides centralized AI services with:
 - Retry logic with exponential backoff
@@ -15,7 +15,7 @@ from typing import List, Optional, Tuple
 from dataclasses import dataclass, field
 
 from django.conf import settings
-from openai import OpenAI, APIError, APITimeoutError, APIConnectionError
+from openai import OpenAI, APIError, APITimeoutError, APIConnectionError, RateLimitError
 
 from apps.designs.models import Design, Category
 from config.middleware import get_client_ip
@@ -92,10 +92,10 @@ rate_limiter = RateLimiter()
 # ─── AI Client ───────────────────────────────────────────────────────────────
 
 def get_ai_client() -> OpenAI:
-    """Create a DeepSeek API client (OpenAI-compatible)."""
+    """Create a Google Gemini API client (OpenAI-compatible)."""
     return OpenAI(
-        api_key=settings.DEEPSEEK_API_KEY,
-        base_url=settings.DEEPSEEK_API_URL,
+        api_key=settings.GEMINI_API_KEY,
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
         timeout=REQUEST_TIMEOUT,
     )
 
@@ -107,7 +107,7 @@ def _call_ai_with_retry(
     temperature: float = 0.7,
 ) -> str:
     """
-    Call DeepSeek API with retry logic and exponential backoff.
+    Call Gemini API with retry logic and exponential backoff.
 
     Args:
         system_prompt: System message for the AI
@@ -129,7 +129,7 @@ def _call_ai_with_retry(
             logger.info(f"AI call attempt {attempt + 1}/{MAX_RETRIES}")
 
             response = client.chat.completions.create(
-                model="deepseek-chat",
+                model="gemini-2.5-flash",
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
@@ -138,13 +138,17 @@ def _call_ai_with_retry(
                 temperature=temperature,
             )
 
-            result = response.choices[0].message.content.strip()
+            raw_content = response.choices[0].message.content
+            if not raw_content:
+                # Gemini 2.5 thinking mode may return None content; retry
+                raise ValueError("AI returned empty response (thinking mode)")
+            result = raw_content.strip()
             logger.info(f"AI call succeeded on attempt {attempt + 1}")
             return result
 
-        except (APITimeoutError, APIConnectionError) as e:
+        except (APITimeoutError, APIConnectionError, RateLimitError) as e:
             last_error = e
-            wait_time = RETRY_DELAY_BASE * (2 ** attempt)
+            wait_time = RETRY_DELAY_BASE * (2 ** (attempt + 1))  # longer backoff for rate limits
             logger.warning(
                 f"AI call attempt {attempt + 1} failed (retryable): {e}. "
                 f"Retrying in {wait_time}s..."
@@ -188,7 +192,7 @@ def smart_search(query: str, request=None) -> dict:
     AI Smart Search — find designs using natural language.
 
     Converts a natural language query into relevant design matches
-    by leveraging DeepSeek's understanding of context.
+    by leveraging Gemini's understanding of context.
 
     Args:
         query: Natural language search query

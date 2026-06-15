@@ -64,3 +64,41 @@ class Design(models.Model):
                 self.slug = f"{original_slug}-{counter}"
                 counter += 1
         super().save(*args, **kwargs)
+
+
+class Portfolio(models.Model):
+    """Portfolio collection for Design By Me section."""
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True, default='')
+    thumbnail = models.ImageField(upload_to='portfolio/thumbnails/', blank=True, null=True)
+    order = models.PositiveIntegerField(default=0, help_text='Display order (lower = first)')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Portfolio'
+        verbose_name_plural = 'Portfolios'
+        ordering = ['order', '-created_at']
+
+    def __str__(self):
+        return self.title
+
+
+class PortfolioImage(models.Model):
+    """Individual image within a portfolio collection."""
+    portfolio = models.ForeignKey(
+        Portfolio,
+        on_delete=models.CASCADE,
+        related_name='images'
+    )
+    image = models.ImageField(upload_to='portfolio/images/')
+    caption = models.CharField(max_length=200, blank=True, default='')
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = 'Portfolio Image'
+        verbose_name_plural = 'Portfolio Images'
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return f"{self.portfolio.title} - {self.caption or self.image.name}"

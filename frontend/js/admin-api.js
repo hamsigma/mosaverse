@@ -85,6 +85,32 @@ const AdminAPI = {
     deleteCategory(id) {
         return API.delete(`/categories/${id}/`);
     },
+
+    // ─── Portfolio CRUD ─────────────────────────────────
+
+    getPortfolios() {
+        return API.get('/portfolio/');
+    },
+
+    createPortfolio(formData) {
+        return API.upload('/portfolio/create/', formData);
+    },
+
+    updatePortfolio(id, formData) {
+        return API.uploadPut(`/portfolio/${id}/`, formData);
+    },
+
+    deletePortfolio(id) {
+        return API.delete(`/portfolio/${id}/`);
+    },
+
+    addPortfolioImage(portfolioId, formData) {
+        return API.upload(`/portfolio/${portfolioId}/images/`, formData);
+    },
+
+    deletePortfolioImage(imageId) {
+        return API.delete(`/portfolio/images/${imageId}/delete/`);
+    },
 };
 
 // ─── Toast Notification ────────────────────────────────

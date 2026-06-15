@@ -3,7 +3,9 @@ from rest_framework.decorators import api_view, permission_classes as perm_class
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from .models import Category, Design
+from .models import Portfolio, PortfolioImage
 from .serializers import CategorySerializer, DesignSerializer, DesignListSerializer
+from .serializers import PortfolioSerializer, PortfolioImageSerializer
 
 
 class CsrfExemptMixin:
@@ -110,3 +112,46 @@ def toggle_publish(request, pk):
         'is_published': design.is_published,
         'message': 'Design approved.' if design.is_published else 'Design set to pending.'
     })
+
+
+# ─── Portfolio Views ────────────────────────────────────
+
+class PortfolioListView(generics.ListAPIView):
+    """List all portfolios (public)."""
+    queryset = Portfolio.objects.prefetch_related('images')
+    serializer_class = PortfolioSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class PortfolioCreateView(CsrfExemptMixin, generics.CreateAPIView):
+    """Create a new portfolio (admin only)."""
+    queryset = Portfolio.objects.all()
+    serializer_class = PortfolioSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+
+class PortfolioDetailView(CsrfExemptMixin, generics.RetrieveUpdateDestroyAPIView):
+    """Detail, update, or delete a portfolio (admin only for write)."""
+    queryset = Portfolio.objects.prefetch_related('images')
+    serializer_class = PortfolioSerializer
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
+            return [permissions.IsAdminUser()]
+        return [permissions.AllowAny()]
+
+
+class PortfolioImageAddView(CsrfExemptMixin, generics.CreateAPIView):
+    """Add an image to a portfolio (admin only)."""
+    serializer_class = PortfolioImageSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def perform_create(self, serializer):
+        portfolio = Portfolio.objects.get(pk=self.kwargs['portfolio_pk'])
+        serializer.save(portfolio=portfolio)
+
+
+class PortfolioImageDeleteView(CsrfExemptMixin, generics.DestroyAPIView):
+    """Delete an image from a portfolio (admin only)."""
+    queryset = PortfolioImage.objects.all()
+    permission_classes = [permissions.IsAdminUser]

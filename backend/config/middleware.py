@@ -17,8 +17,8 @@ from rest_framework.authentication import SessionAuthentication as BaseSessionAu
 
 logger = logging.getLogger(__name__)
 
-# Maximum upload size: 10MB
-MAX_UPLOAD_SIZE = 10 * 1024 * 1024
+# Maximum upload size: 50MB
+MAX_UPLOAD_SIZE = 50 * 1024 * 1024
 
 # Allowed image MIME types
 ALLOWED_IMAGE_TYPES = [
@@ -97,7 +97,7 @@ class FileUploadValidationMiddleware:
                                 f"exceeds limit from {get_client_ip(request)}"
                             )
                             return HttpResponseBadRequest(
-                                'File too large. Maximum size is 10MB.',
+                                'File too large. Maximum size is 50MB.',
                                 content_type='application/json'
                             )
                     except (ValueError, TypeError):
