@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "builds": [
+    {
+      "src": "backend/config/wsgi.py",
+      "use": "@vercel/python",
+      "config": { "maxDuration": 15 }
+    },
+    {
+      "src": "frontend/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/config/wsgi.py"
+    },
+    {
+      "src": "/static/(.*)",
+      "dest": "backend/config/wsgi.py"
+    },
+    {
+      "src": "/media/(.*)",
+      "dest": "backend/config/wsgi.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
+    }
+  ]
+}
