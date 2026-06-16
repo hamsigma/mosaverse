@@ -281,33 +281,59 @@ def generate_description(
         dict with 'description' and 'design_id'
     """
     user_prompt = (
-        f"Buatkan deskripsi singkat dan menarik (2-3 kalimat) untuk desain baju berikut:\n"
+        f"Tuliskan satu paragraf deskripsi produk (2-3 kalimat) untuk desain baju berikut:\n"
         f"- Judul: {title}\n"
         f"- Kategori: {category if category else 'belum ditentukan'}\n\n"
-        f"Deskripsi harus informatif, menggambarkan gaya dan karakteristik desain, "
-        f"dan menarik untuk calon pembeli.\n"
-        f"Tulis langsung deskripsinya tanpa kalimat pengantar apa pun (JANGAN gunakan kata seperti 'Tentu', 'Berikut adalah', dll.). Tulis dalam Bahasa Indonesia."
+        f"Aturan penting:\n"
+        f"1. Tulis langsung deskripsi produknya saja.\n"
+        f"2. JANGAN menggunakan kata pembuka seperti 'Tentu', 'Berikut', 'Ini dia', dll.\n"
+        f"3. JANGAN memberikan pilihan deskripsi (cukup satu saja).\n"
+        f"4. Bahasa Indonesia."
     )
 
     description = _call_ai_with_retry(
-        system_prompt="Kamu adalah copywriter fashion profesional. Buat deskripsi yang menarik, singkat, dan profesional dalam Bahasa Indonesia. Langsung kembalikan teks deskripsi saja tanpa basa-basi atau kalimat pengantar.",
+        system_prompt="Kamu adalah penulis deskripsi produk toko online. Tugasmu menulis deskripsi produk fashion berdasarkan judul yang diberikan. Kamu harus langsung menuliskan deskripsi produk tersebut tanpa kalimat pembuka atau pengantar sama sekali.",
         user_prompt=user_prompt,
-        max_tokens=300,
-        temperature=0.7,
+        max_tokens=200,
+        temperature=0.4,
     )
+
+    # Post-process to sanitize any conversational preambles
+    cleaned_desc = description.strip()
+    prefixes_to_strip = [
+        "tentu saja,", "tentu saja", "tentu,", "tentu", 
+        "berikut adalah", "berikut ini", "berikut", 
+        "ini adalah", "ini dia", 
+        "pilihan deskripsi:", "deskripsi singkat:",
+    ]
+    
+    lowered = cleaned_desc.lower()
+    for prefix in prefixes_to_strip:
+        if lowered.startswith(prefix):
+            cleaned_desc = cleaned_desc[len(prefix):].strip(" :,.-\n")
+            lowered = cleaned_desc.lower()
+
+    # If AI returned numbered options, pick the first one
+    if "1." in cleaned_desc[:20]:
+        lines = cleaned_desc.split("\n")
+        for line in lines:
+            line = line.strip()
+            if line.startswith("1.") or line.startswith("1 "):
+                cleaned_desc = line[2:].strip(" -*\"'")
+                break
 
     # Auto-update design if ID provided
     if design_id:
         try:
             design = Design.objects.get(id=design_id)
-            design.description = description
+            design.description = cleaned_desc
             design.save()
             logger.info(f"Auto-updated description for design #{design_id}")
         except Design.DoesNotExist:
             logger.warning(f"Design #{design_id} not found for auto-update")
 
     return {
-        'description': description,
+        'description': cleaned_desc,
         'design_id': design_id,
     }
 
