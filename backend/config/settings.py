@@ -161,7 +161,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 CLOUDINARY_URL = os.getenv('CLOUDINARY_URL', '')
 
-if CLOUDINARY_URL:
+if CLOUDINARY_URL and CLOUDINARY_URL.startswith('cloudinary://'):
     # Use Cloudinary for media storage in production
     import urllib.parse
     try:
@@ -187,7 +187,7 @@ if CLOUDINARY_URL:
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
 else:
-    # Local filesystem storage for development
+    # Local filesystem storage for development/fallback
     STORAGES = {
         'default': {
             'BACKEND': 'django.core.files.storage.FileSystemStorage',
@@ -197,7 +197,10 @@ else:
         },
     }
     MEDIA_URL = 'media/'
-    MEDIA_ROOT = BASE_DIR / 'media'
+    if os.getenv('VERCEL') == '1' or 'VERCEL' in os.environ:
+        MEDIA_ROOT = '/tmp/media'
+    else:
+        MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Default primary key field type
