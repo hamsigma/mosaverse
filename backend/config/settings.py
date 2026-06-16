@@ -30,12 +30,12 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',
     'django.contrib.staticfiles',
+    'cloudinary',
     # Third-party apps
     'rest_framework',
     'corsheaders',
-    'cloudinary_storage',
-    'cloudinary',
     # Local apps
     'apps.authentication',
     'apps.designs',
@@ -163,6 +163,17 @@ CLOUDINARY_URL = os.getenv('CLOUDINARY_URL', '')
 
 if CLOUDINARY_URL:
     # Use Cloudinary for media storage in production
+    import urllib.parse
+    try:
+        parsed_url = urllib.parse.urlparse(CLOUDINARY_URL)
+        CLOUDINARY_STORAGE = {
+            'CLOUD_NAME': parsed_url.hostname,
+            'API_KEY': parsed_url.username,
+            'API_SECRET': parsed_url.password,
+        }
+    except Exception:
+        CLOUDINARY_STORAGE = {}
+
     import cloudinary
     cloudinary.config(secure=True)
     STORAGES = {
