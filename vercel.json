@@ -1,6 +1,10 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "env": {
+    "ALLOWED_HOSTS": "*",
+    "DEBUG": "False"
+  },
   "builds": [
     {
       "src": "backend/config/wsgi.py",
