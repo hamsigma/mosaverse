@@ -144,7 +144,7 @@
 
         async function loadPortfolio() {
             try {
-                const resp = await fetch('http://localhost:8000/api/portfolio/');
+                const resp = await fetch(`${window.location.origin}/api/portfolio/`);
                 const data = await resp.json();
                 portfolioData = data.results || data;
                 renderCards();
