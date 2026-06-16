@@ -23,7 +23,7 @@
 <body class="bg-bg font-vietnam text-primary min-h-screen">
 
     <!-- Admin Sidebar -->
-    <aside id="adminSidebar" class="fixed inset-y-0 left-0 w-60 bg-primary text-accent z-50 flex flex-col">
+    <aside id="adminSidebar" class="fixed inset-y-0 left-0 w-60 bg-primary text-accent z-50 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
         <div class="p-6">
             <a href="index.html" class="flex items-center gap-2.5">
                 <img src="images/mosaverse-logo.jpg" alt="MosaVerse" class="w-8 h-8 rounded-lg object-cover">
@@ -61,20 +61,28 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="ml-60 min-h-screen">
+    <main class="ml-0 lg:ml-60 min-h-screen">
         <!-- Header -->
         <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40">
-            <div class="px-8 py-5">
-                <h1 class="font-epilogue text-2xl font-bold">Kelola Desain</h1>
-                <p class="text-sm text-primary/50 mt-1">Unggah, edit, dan atur katalog desain MosaVerse.</p>
+            <div class="px-6 lg:px-8 py-5 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <button id="menuToggleBtn" class="lg:hidden p-2 text-primary hover:bg-black/5 rounded-btn transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <div>
+                        <h1 class="font-epilogue text-xl lg:text-2xl font-bold">Kelola Desain</h1>
+                        <p class="text-xs lg:text-sm text-primary/50 mt-1 hidden sm:block">Unggah, edit, dan atur katalog desain MosaVerse.</p>
+                    </div>
+                </div>
             </div>
         </header>
 
         <!-- Two-Panel Layout -->
-        <div class="p-8 flex gap-8 items-start">
+        <div class="p-6 lg:p-8 flex flex-col lg:flex-row gap-8 items-start">
 
             <!-- Left Panel: Form -->
-            <div class="w-[380px] flex-shrink-0">
+            <div class="w-full lg:w-[380px] lg:flex-shrink-0">
+
                 <div class="bg-white rounded-card shadow-sm p-6 sticky top-24">
                     <h2 id="formTitle" class="font-epilogue text-sm font-bold mb-5">Tambah / Edit Desain</h2>
                     <form id="designForm" class="space-y-5">
@@ -170,22 +178,24 @@
                     </div>
 
                     <!-- Table -->
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b border-primary/5">
-                                <th class="text-left text-[10px] font-bold uppercase tracking-widest text-primary/40 px-6 py-3">Gambar</th>
-                                <th class="text-left text-[10px] font-bold uppercase tracking-widest text-primary/40 px-6 py-3">Nama Desain</th>
-                                <th class="text-left text-[10px] font-bold uppercase tracking-widest text-primary/40 px-6 py-3">Kategori</th>
-                                <th class="text-center text-[10px] font-bold uppercase tracking-widest text-primary/40 px-6 py-3">Status</th>
-                                <th class="text-right text-[10px] font-bold uppercase tracking-widest text-primary/40 px-6 py-3">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="designsTableBody">
-                            <tr>
-                                <td colspan="5" class="px-6 py-12 text-center text-sm text-primary/40">Loading...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="overflow-x-auto w-full">
+                        <table class="w-full min-w-[600px]">
+                            <thead>
+                                <tr class="border-b border-primary/5">
+                                    <th class="text-left text-[10px] font-bold uppercase tracking-widest text-primary/40 px-6 py-3">Gambar</th>
+                                    <th class="text-left text-[10px] font-bold uppercase tracking-widest text-primary/40 px-6 py-3">Nama Desain</th>
+                                    <th class="text-left text-[10px] font-bold uppercase tracking-widest text-primary/40 px-6 py-3">Kategori</th>
+                                    <th class="text-center text-[10px] font-bold uppercase tracking-widest text-primary/40 px-6 py-3">Status</th>
+                                    <th class="text-right text-[10px] font-bold uppercase tracking-widest text-primary/40 px-6 py-3">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="designsTableBody">
+                                <tr>
+                                    <td colspan="5" class="px-6 py-12 text-center text-sm text-primary/40">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
                     <!-- Pagination -->
                     <div id="designsPagination" class="px-6 py-4 border-t border-primary/5 flex items-center justify-between">
@@ -198,7 +208,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="ml-60 text-center py-6">
+    <footer class="ml-0 lg:ml-60 text-center py-6">
         <p class="text-xs text-primary/30">&copy; 2026 MosaVerse. All rights reserved.</p>
     </footer>
 
@@ -248,5 +258,21 @@
     <script src="js/api.js?v=4"></script>
     <script src="js/admin-api.js?v=4"></script>
     <script src="js/admin-designs.js?v=4"></script>
+    <script>
+        // Sidebar Toggle logic for mobile
+        const sidebar = document.getElementById('adminSidebar');
+        const menuToggle = document.getElementById('menuToggleBtn');
+        if (menuToggle && sidebar) {
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('-translate-x-full');
+            });
+            document.addEventListener('click', (e) => {
+                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            });
+        }
+    </script>
 </body>
 </html>

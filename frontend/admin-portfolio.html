@@ -34,7 +34,7 @@
 <body class="bg-bg font-vietnam text-primary min-h-screen">
 
     <!-- Admin Sidebar -->
-    <aside id="adminSidebar" class="fixed inset-y-0 left-0 w-60 bg-primary text-accent z-50 flex flex-col">
+    <aside id="adminSidebar" class="fixed inset-y-0 left-0 w-60 bg-primary text-accent z-50 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
         <div class="p-6">
             <a href="index.html" class="flex items-center gap-2.5">
                 <img src="images/mosaverse-logo.jpg" alt="MosaVerse" class="w-8 h-8 rounded-lg object-cover">
@@ -71,17 +71,22 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="ml-60 min-h-screen">
+    <main class="ml-0 lg:ml-60 min-h-screen">
         <!-- Header -->
         <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40">
-            <div class="px-8 py-5 flex items-center justify-between">
-                <div>
-                    <h1 class="font-epilogue text-2xl font-bold">Portfolio</h1>
-                    <p class="text-sm text-primary/50 mt-1">Kelola koleksi desain mockup untuk halaman About.</p>
+            <div class="px-6 lg:px-8 py-5 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <button id="menuToggleBtn" class="lg:hidden p-2 text-primary hover:bg-black/5 rounded-btn transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <div>
+                        <h1 class="font-epilogue text-xl lg:text-2xl font-bold">Portfolio</h1>
+                        <p class="text-xs lg:text-sm text-primary/50 mt-1 hidden sm:block">Kelola koleksi desain mockup untuk halaman About.</p>
+                    </div>
                 </div>
-                <button onclick="showCreateForm()" class="px-5 py-2.5 bg-highlight text-white text-xs font-bold uppercase tracking-widest rounded-btn hover:bg-highlight/80 transition-colors flex items-center gap-2">
+                <button onclick="showCreateForm()" class="px-4 py-2 lg:px-5 lg:py-2.5 bg-highlight text-white text-[10px] lg:text-xs font-bold uppercase tracking-widest rounded-btn hover:bg-highlight/80 transition-colors flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    Tambah Portfolio
+                    Tambah
                 </button>
             </div>
         </header>
@@ -159,7 +164,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="ml-60 text-center py-6">
+    <footer class="ml-0 lg:ml-60 text-center py-6">
         <p class="text-xs text-primary/30">&copy; 2026 MosaVerse. All rights reserved.</p>
     </footer>
 
@@ -169,5 +174,21 @@
     <script src="js/api.js?v=4"></script>
     <script src="js/admin-api.js?v=4"></script>
     <script src="js/admin-portfolio.js?v=4"></script>
+    <script>
+        // Sidebar Toggle logic for mobile
+        const sidebar = document.getElementById('adminSidebar');
+        const menuToggle = document.getElementById('menuToggleBtn');
+        if (menuToggle && sidebar) {
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('-translate-x-full');
+            });
+            document.addEventListener('click', (e) => {
+                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
