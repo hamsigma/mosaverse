@@ -9,6 +9,11 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+# Clean up invalid CLOUDINARY_URL to prevent the cloudinary library from crashing on import
+_cloudinary_url = os.getenv('CLOUDINARY_URL', '')
+if _cloudinary_url and not _cloudinary_url.startswith('cloudinary://'):
+    os.environ.pop('CLOUDINARY_URL', None)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
