@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     # Third-party apps
     'rest_framework',
     'corsheaders',
+    'cloudinary_storage',
+    'cloudinary',
     # Local apps
     'apps.authentication',
     'apps.designs',
@@ -157,20 +159,33 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STORAGES = {
-    'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
-    },
-    'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
-    },
-}
+CLOUDINARY_URL = os.getenv('CLOUDINARY_URL', '')
 
-# Media files (uploaded images)
-MEDIA_URL = 'media/'
-if os.getenv('VERCEL') == '1' or 'VERCEL' in os.environ:
-    MEDIA_ROOT = '/tmp/media'
+if CLOUDINARY_URL:
+    # Use Cloudinary for media storage in production
+    import cloudinary
+    cloudinary.config(secure=True)
+    STORAGES = {
+        'default': {
+            'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        },
+    }
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
 else:
+    # Local filesystem storage for development
+    STORAGES = {
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        },
+    }
+    MEDIA_URL = 'media/'
     MEDIA_ROOT = BASE_DIR / 'media'
 
 
