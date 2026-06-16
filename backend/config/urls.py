@@ -23,3 +23,12 @@ if settings.DEBUG:
                           document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL,
                           document_root=settings.STATIC_ROOT)
+
+# Always serve media files via Django's serve view in production (needed for Vercel /tmp storage)
+from django.views.static import serve
+from django.urls import re_path
+urlpatterns += [
+    re_path(r'^media/(?P<path>.*)$', serve, {
+        'document_root': settings.MEDIA_ROOT,
+    }),
+]

@@ -168,7 +168,10 @@ STORAGES = {
 
 # Media files (uploaded images)
 MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+if os.getenv('VERCEL') == '1' or 'VERCEL' in os.environ:
+    MEDIA_ROOT = '/tmp/media'
+else:
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Default primary key field type
