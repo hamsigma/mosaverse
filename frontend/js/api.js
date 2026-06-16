@@ -36,7 +36,7 @@ function _buildHeaders({ json = true } = {}) {
 }
 
 async function _request(method, endpoint, { body, params, json = true } = {}) {
-  const url = new URL(`${API_BASE}${endpoint}`);
+  const url = new URL(`${API_BASE}${endpoint}`, window.location.origin);
   if (params) {
     Object.entries(params).forEach(([key, val]) => {
       if (val !== null && val !== undefined && val !== "") {
