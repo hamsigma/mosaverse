@@ -286,11 +286,11 @@ def generate_description(
         f"- Kategori: {category if category else 'belum ditentukan'}\n\n"
         f"Deskripsi harus informatif, menggambarkan gaya dan karakteristik desain, "
         f"dan menarik untuk calon pembeli.\n"
-        f"Tulis dalam Bahasa Indonesia."
+        f"Tulis langsung deskripsinya tanpa kalimat pengantar apa pun (JANGAN gunakan kata seperti 'Tentu', 'Berikut adalah', dll.). Tulis dalam Bahasa Indonesia."
     )
 
     description = _call_ai_with_retry(
-        system_prompt="Kamu adalah copywriter fashion profesional. Buat deskripsi yang menarik, singkat, dan profesional dalam Bahasa Indonesia.",
+        system_prompt="Kamu adalah copywriter fashion profesional. Buat deskripsi yang menarik, singkat, dan profesional dalam Bahasa Indonesia. Langsung kembalikan teks deskripsi saja tanpa basa-basi atau kalimat pengantar.",
         user_prompt=user_prompt,
         max_tokens=300,
         temperature=0.7,
